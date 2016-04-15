@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 2.8.12)
 
 project(libwebcam)
 
+#vs tutorial -> use content form: https://cognitivewaves.wordpress.com/cmake-and-visual-studio/#source-structure
 #include(../CMakeInclude.txt)
 
 # Add all the source files to the SOURCES variable.
