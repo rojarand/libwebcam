@@ -6,7 +6,7 @@
 * Webcam enumeration
 * C++ 11 compliance
 * Portablity (Windows, Linux)
-* Build on top of Video4linux (Linux) and DirectShow (Windows)
+* Built on top of Video4linux (Linux) and DirectShow (Windows)
 * Ease of use
 
 Usage example:
