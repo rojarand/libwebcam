@@ -24,7 +24,6 @@ start_daemon() {
         else
                 echo "starting daemon..."
                 /usr/bin/$daemon_name 
-                #/home/zebul/Projects/cpp/WebCamServer/Debug/$daemon_name
                 pid=$(get_pid)
                 echo "daemon started with pid: $pid"
         fi

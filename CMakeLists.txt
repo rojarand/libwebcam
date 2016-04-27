@@ -23,6 +23,8 @@ file (GLOB_RECURSE INFO_SOURCES
       "${CMAKE_CURRENT_SOURCE_DIR}/libwebcam/info/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/libwebcam/info/*.cpp")	  
 file (GLOB_RECURSE UTILS_SOURCES
       "${CMAKE_CURRENT_SOURCE_DIR}/libwebcam/utils/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/libwebcam/utils/*.cpp")
+file (GLOB INCLUDER
+      "${CMAKE_CURRENT_SOURCE_DIR}/libwebcam/webcam.h")
 
 
 source_group("device" FILES ${DEVICE_SOURCES})
@@ -38,7 +40,8 @@ add_library(${LIB_NAME} ${LIB_MODE}
 	${ERROR_SOURCES}
 	${IMAGE_SOURCES}
 	${INFO_SOURCES}
-	${UTILS_SOURCES})
+	${UTILS_SOURCES}
+	${INCLUDER})
 	
 #IF (WIN32)
 IF(MSVC)
@@ -50,15 +53,14 @@ IF(MSVC)
   add_definitions(-D_UNICODE)
   #include(FindDirectShow.cmake)
   #let user to configure baseclass dir in gui mode
-  set(DIRECTSHOW_BASECLASS_DIR "C:/Program Files/Microsoft SDKs/Windows/v7.1/Samples/multimedia/directshow/baseclasses" CACHE PATH "Path to directshow baseclasses folder")
+  #set(DIRECTSHOW_BASECLASS_DIR "C:/Program Files/Microsoft SDKs/Windows/v7.1/Samples/multimedia/directshow/baseclasses" CACHE PATH "Path to directshow baseclasses folder")
   #set(DIRECTSHOW_BASECLASS_DIR "C:/Program Files/Microsoft SDKs/Windows/v7.1/Samples/multimedia/directshow/baseclasses")
   include_directories(${DIRECTSHOW_BASECLASS_DIR})
   include_external_msproject(BaseClasses "${DIRECTSHOW_BASECLASS_DIR}/BaseClasses.vcxproj")
   
   MESSAGE("LIBRARY MODE: ${LIB_MODE}")
   IF(${LIB_MODE} STREQUAL "SHARED")
-	#link_directories("C:/Program Files/Microsoft SDKs/Windows/v7.1/Samples/multimedia/directshow/baseclasses/Debug")
-	target_link_libraries(${LIB_NAME} debug ${DIRECTSHOW_BASECLASS_DIR}/Debug/strmbasd.lib Winmm.lib)
+	# target_link_libraries(${LIB_NAME} debug ${DIRECTSHOW_BASECLASS_DIR}/Debug/strmbasd.lib Winmm.lib)
 	target_link_libraries(${LIB_NAME} optimized ${DIRECTSHOW_BASECLASS_DIR}/Release/strmbase.lib Winmm.lib)
   ENDIF()
 ELSE()
