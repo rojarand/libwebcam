@@ -14,6 +14,8 @@ IF(MSVC)
 	target_link_libraries(enumerator debug ${LIBWEBCAM_DIR}/build/Debug/webcam.lib Winmm.lib)
 	
 ELSE()
-	set(CMAKE_CXX_FLAGS "-std=c++0x")
+	find_package(libwebcam REQUIRED)
+	target_link_libraries(enumerator libwebcam)
+	#set(CMAKE_CXX_FLAGS "-std=c++0x")
 ENDIF()
   
