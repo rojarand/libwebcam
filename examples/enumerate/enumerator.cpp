@@ -5,6 +5,12 @@ int main(int argc, char **argv)
 {
 	const webcam::device_info_enumeration & enumeration = webcam::enumerator::enumerate();
 	const size_t count = enumeration.count();
+	if(count == 0){
+	
+		std::cout << "There is no webcam available on this computer"<< std::endl;
+		return 0;
+	}
+	
 	for (size_t device_index = 0; device_index < count; device_index++){
 
 		const webcam::device_info & device_info = enumeration.get(device_index);

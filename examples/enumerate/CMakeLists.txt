@@ -15,7 +15,7 @@ IF(MSVC)
 	
 ELSE()
 	find_package(libwebcam REQUIRED)
-	target_link_libraries(enumerator libwebcam)
+	target_link_libraries(enumerator webcam)
 	#set(CMAKE_CXX_FLAGS "-std=c++0x")
 ENDIF()
   
