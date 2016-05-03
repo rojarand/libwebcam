@@ -6,3 +6,4 @@
 #endif
 
 #include "device/device.h"
+#include "error/enumerator_exception.h"
