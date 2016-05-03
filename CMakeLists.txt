@@ -13,8 +13,6 @@ set(LIB_MODE "STATIC")# "SHARED", "STATIC"
 # Collect sources into the variable
 file (GLOB_RECURSE DEVICE_SOURCES
       "${CMAKE_CURRENT_SOURCE_DIR}/libwebcam/device/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/libwebcam/device/*.cpp")
-file (GLOB_RECURSE ENUMERATOR_SOURCES
-      "${CMAKE_CURRENT_SOURCE_DIR}/libwebcam/enumerator/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/libwebcam/enumerator/*.cpp")
 file (GLOB_RECURSE ERROR_SOURCES
       "${CMAKE_CURRENT_SOURCE_DIR}/libwebcam/error/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/libwebcam/error/*.cpp")
 file (GLOB_RECURSE IMAGE_SOURCES
@@ -28,7 +26,6 @@ file (GLOB INCLUDER
 
 
 source_group("device" FILES ${DEVICE_SOURCES})
-source_group("enumerator" FILES ${ENUMERATOR_SOURCES})
 source_group("error" FILES ${ERROR_SOURCES})
 source_group("image" FILES ${IMAGE_SOURCES})
 source_group("info" FILES ${INFO_SOURCES})
@@ -36,7 +33,6 @@ source_group("utils" FILES ${UTILS_SOURCES})
 
 add_library(${LIB_NAME} ${LIB_MODE}
 	${DEVICE_SOURCES}
-	${ENUMERATOR_SOURCES}
 	${ERROR_SOURCES}
 	${IMAGE_SOURCES}
 	${INFO_SOURCES}

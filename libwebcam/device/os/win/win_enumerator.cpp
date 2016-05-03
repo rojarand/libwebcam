@@ -13,9 +13,9 @@
 namespace webcam
 {
 
-	enumerator::enumerator(IEnumMoniker * enum_moniker_, bool cleanUp_)
+	enumerator::enumerator(IEnumMoniker * enum_moniker_, bool clean_up_)
 		:_enum_moniker(enum_moniker_)
-		, cleanUp(cleanUp_)
+		, clean_up(clean_up_)
 	{
 	}
 
@@ -26,7 +26,7 @@ namespace webcam
 		{
 			_enum_moniker->Release();
 		}
-		if (cleanUp)
+		if (clean_up)
 		{
 			CoUninitialize();
 		}
@@ -35,7 +35,7 @@ namespace webcam
 	enumerator enumerator::create()
 	{
 		HRESULT res = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
-		bool cleanUp = (S_OK == res);
+		bool clean_up = (S_OK == res);
 		
 		CComPtr<ICreateDevEnum> dev_enum = nullptr;
 		res = CoCreateInstance(CLSID_SystemDeviceEnum, nullptr, CLSCTX_INPROC, IID_PPV_ARGS(&dev_enum));
@@ -47,15 +47,20 @@ namespace webcam
 		// Enumerate video capture devices
 		IEnumMoniker * enum_moniker;
 		res = dev_enum->CreateClassEnumerator(CLSID_VideoInputDeviceCategory, &enum_moniker, 0);
+		/* if there is no camera already connected, instance of IEnumMoniker may be null, this not exception   
 		if (S_OK != res)
 		{
 			throw video_device_enumerator_exception("can not create video device enumerator", res);
-		}
-		return enumerator(enum_moniker, cleanUp);
+		}*/
+		return enumerator(enum_moniker, clean_up);
 	}
 
 	device_info_provider enumerator::next()
 	{
+		if(_enum_moniker==nullptr)
+		{
+			return device_info_provider(nullptr);
+		}
 		IMoniker * moniker = nullptr;
 		ULONG fetched = 0;
 		HRESULT res = _enum_moniker->Next(1, &moniker, &fetched);

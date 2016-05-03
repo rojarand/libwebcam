@@ -18,7 +18,7 @@ namespace webcam
 	private:
 		enumerator(IEnumMoniker * enum_moniker_, bool cleanUp_);
 		IEnumMoniker * _enum_moniker;
-		bool cleanUp;
+		bool clean_up;
 	};
 }
 #endif
