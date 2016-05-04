@@ -10,6 +10,7 @@ do_build() {
 	mkdir $BUILD_DIR; cd $BUILD_DIR
 	cmake -DCMAKE_BUILD_TYPE=Debug ..
 	make # VERBOSE=1
+	cp ../../../libwebcam/usb.ids .
 }
 
 do_install() {
