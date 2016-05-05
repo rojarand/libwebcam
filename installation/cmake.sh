@@ -3,17 +3,19 @@
 BUILD_DIR="build"
 
 do_clean() {
-	rm -rf $BUILD_DIR
+	rm -rf ../$BUILD_DIR
 }
 
 do_build() {
+	cd ..
 	mkdir $BUILD_DIR; cd $BUILD_DIR
 	cmake -DCMAKE_BUILD_TYPE=Debug ..
 	make # VERBOSE=1
+	cd ../installation
 }
 
 do_install() {
-	cd $BUILD_DIR
+	cd ../$BUILD_DIR
 	make install
 }
 

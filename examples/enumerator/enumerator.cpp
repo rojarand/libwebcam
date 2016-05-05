@@ -41,7 +41,7 @@ int main(int argc, char **argv)
 			std::cout << std::endl << std::endl;
 		}
 	}
-	catch(const webcam::video_device_enumerator_exception & exc_)
+	catch(const webcam::enumerator_exception & exc_)
 	{
 		std::cout<<exc_.what()<<std::endl;
 	}
