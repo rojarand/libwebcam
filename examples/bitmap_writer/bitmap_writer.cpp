@@ -3,6 +3,7 @@
 #include <fstream>
 #include <chrono>
 #include <iomanip>
+#include <cstring>
 #include <libwebcam/webcam.h>
 
 #ifdef WIN32
@@ -11,34 +12,27 @@
 
 #else
 
-#define BYTE  unsigned char
-#define DWORD  unsigned int
-#define LONG  int
-#define UINT  unsigned int
-#define WORD  unsigned short int
+typedef struct bitmapFileHeader
+{
+   unsigned short int bfType;
+   unsigned int bfSize;
+   unsigned short int bfReserved1, bfReserved2;
+   unsigned int bfOffBits;
+} BITMAPFILEHEADER;
 
-#define LPSTR  char*
-typedef struct tagBITMAPFILEHEADER {
-	WORD    bfType;
-	DWORD   bfSize;
-	WORD    bfReserved1;
-	WORD    bfReserved2;
-	DWORD   bfOffBits;
-} BITMAPFILEHEADER, *PBITMAPFILEHEADER;
+typedef struct bitmapInfoHeader
+{
+   unsigned int biSize;
+   int biWidth, biHeight;
+   unsigned short int biPlanes;
+   unsigned short int biBitCount;
+   unsigned int biCompression;
+   unsigned int biSizeImage;
+   int biXPelsPerMeter, biYPelsPerMeter;
+   unsigned int biClrUsed;
+   unsigned int biClrImportant;
+} BITMAPINFOHEADER;
 
-typedef struct tagBITMAPINFOHEADER{
-	DWORD  biSize;
-	LONG   biWidth;
-	LONG   biHeight;
-	WORD   biPlanes;
-	WORD   biBitCount;
-	DWORD  biCompression;
-	DWORD  biSizeImage;
-	LONG   biXPelsPerMeter;
-	LONG   biYPelsPerMeter;
-	DWORD  biClrUsed;
-	DWORD  biClrImportant;
-} BITMAPINFOHEADER, *PBITMAPINFOHEADER;
 
 #endif
 
