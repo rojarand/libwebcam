@@ -13,6 +13,7 @@ IF(MSVC)
 	target_link_libraries(bitmap_writer debug ${LIBWEBCAM_DIR}/build/Debug/webcam.lib Winmm.lib)
 	
 ELSE()
+	set(CMAKE_CXX_FLAGS "-std=c++0x")
 	find_package(libwebcam REQUIRED)
 	target_link_libraries(bitmap_writer webcam)
 ENDIF()
