@@ -38,3 +38,10 @@ int main()
 	return 0;
 }
 ```
+### How to use libwebcam
+* Install source using installation guide
+* Include <webcam/webcam.h>
+* Enumerate available webcams
+* Setup video_settings using enumerated video parameters
+* Create instance of webcam::device passing number of device and video_settings (number starts from 1)
+* Open device, read images, close device
