@@ -48,4 +48,4 @@ int main()
 
 You can find usage examples in libwebcam/examples directory 
 
-[installation guide]:(http://rojarand.github.io/libwebcam/)
+[installation guide]: http://rojarand.github.io/libwebcam
