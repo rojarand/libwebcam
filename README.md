@@ -39,9 +39,13 @@ int main()
 }
 ```
 ### How to use libwebcam
-* Install source using installation guide
-* Include <webcam/webcam.h>
-* Enumerate available webcams
+* Install source using [installation guide]
+* Include header `#include <libwebcam/webcam.h>`
+* Enumerate for available webcams
 * Setup video_settings using enumerated video parameters
 * Create instance of webcam::device passing number of device and video_settings (number starts from 1)
 * Open device, read images, close device
+
+You can find usage examples in libwebcam/examples directory 
+
+[installation guide]:(http://rojarand.github.io/libwebcam/)
