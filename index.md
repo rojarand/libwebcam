@@ -18,8 +18,10 @@ Root libwebcam directory contains serveral directories:
 
 The installation guide differs for Linux and Windows, so it is described separately.
 
+* [Windows](#windows)
+* [Linux](#linux)
 
-Windows
+### Windows
 
 Note: This guide was tested on Windows 8 and 10 but should work for other Windows version as well.
 
@@ -58,6 +60,12 @@ Build process creates (inside build directory):
 Open command window in administrator mode. Navigate to unpacked libwebcam directory and type:
 ms_cmake.bat build
 The command will start libwebcam build process.
+
+### Linux
+qwerty  
+qwerty  
+qwerty  
+qwerty  
 
 
 
