@@ -23,7 +23,7 @@ The installation guide differs for Linux and Windows, so it is described separat
 
 > Note: This guide was tested on Windows 8 and 10 but should work for other Windows version as well.
 
-Complete required software
+###### Complete required software
 
 The installation guide assumes you have already installed:
 - [Visual Studio IDE (for C++) 2010 or newer] (https://www.visualstudio.com/),
