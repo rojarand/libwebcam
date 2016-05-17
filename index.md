@@ -1,11 +1,11 @@
 TODO: Add visual studio path detection, force visual studio build by explicit parameter, change enumerate dir name to enumerator, add exception handling
 
-## Installation
+# Installation
 
-#### Prepare sources
+## Prepare sources
 Download [libwebcam.zip] (https://github.com/rojarand/libwebcam/archive/master.zip). Extract content to desired libwebcam development directory. 
 
-#### What is inside
+###### What is inside
 Root libwebcam directory contains serveral directories:  
 
 | Directory     | Content                 |
@@ -19,20 +19,20 @@ The installation guide differs for Linux and Windows, so it is described separat
 * [Windows](#windows)
 * [Linux](#linux)
 
-#### Windows
+### Windows
 
 > Note: This guide was tested on Windows 8 and 10 but should work for other Windows version as well.
 
-###### Complete required software
+#### Complete required software
 
 The installation guide assumes you have already installed:
 - [Visual Studio IDE (for C++) 2010 or newer] (https://www.visualstudio.com/),
 - [CMake 2.8.12 or newer] (https://cmake.org/),
 - [Windows 7 SDK] (https://www.microsoft.com/en-us/download/details.aspx?id=8442)
 
-###### Setup environment
+#### Setup environment
 
-Add cmake to your system path  
+###### Add cmake to your system path  
 Open command window and type:  
 <pre>
   <code>cmake --version</code>
@@ -50,13 +50,13 @@ Reopen your command window and type again:
 </pre>
 If command is recognized, make sure cmake meets minimal version requirement. If command is not recognized, fix your cmake availibity in command window.
 
-Update baseclass project
+###### Update baseclass project
 
 Launch Visual Studio IDE in administrator mode. Open baseclass.vcproj placed in Windows 7 SDK installation (ie. C:\Program Files\Microsoft SDKs\Windows\v7.1\Samples\multimedia\directshow\baseclasses\) and proceed coversion. Baseclass.vcproj will be converted to digestible baseclass.vxcproj version.
 
 > Note: Visual Studio must be launched in administrator mode because conversion writes to write protected directory
 
-###### Build library
+#### Build library
 
 Build process creates (inside build directory):
 - static webcam.lib library (debug and release),
@@ -71,7 +71,7 @@ The command will start libwebcam build process.
 
 
 
-#### Linux
+### Linux
 qwerty  
 qwerty  
 qwerty  
