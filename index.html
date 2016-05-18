@@ -1,47 +1,144 @@
-<html>
-	<head>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
-		<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-		<style type="text/css">
-			.note{background-color:#efefef;padding:6px 8px 6px 10px;border-left:6px solid #999}		
-		</style>
-	</head>
-	<body class="  two-column docs normal-width">
-	Libwebcam page is going to be here...
-	
-	<aside class="note"><strong>Note:</strong><span> This tutorial uses Maven. As an alternative to Maven, you could instead use Eclipse and the <a href="https://developers.google.com/eclipse/docs/getting_started">Google Plugin For Eclipse</a>, or you could use <a href="https://cloud.google.com/appengine/docs/java/tools/ant">Apache Ant</a>.</span></aside>
-	
-	<div class="container">
-  <h2>Dynamic Tabs</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>libwebcam</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+  <style type="text/css">
+  .bs-callout {
+  margin: 20px 0;
+  padding: 15px 30px 15px 15px;
+  border-left: 5px solid #eee;
+  }
+  .bs-callout h4 {
+  margin-top: 0;
+  }
+  .bs-callout p:last-child {
+  margin-bottom: 0;
+  }
+  .bs-callout code,
+  .bs-callout .highlight {
+  background-color: #fff;
+  }
+
+  /* Themes for different contexts */
+  .bs-callout-danger {
+  background-color: #fcf2f2;
+  border-color: #d9534f;
+  }
+  .bs-callout-warning {
+  background-color: #fefbed;
+  border-color: #f0ad4e;
+  }
+  .bs-callout-info {
+  background-color: #f0f7fd;
+  border-color: #5bc0de;
+  }
+  </style>
+</head>
+<body>
+
+
+<div class="container">
+  TODO: Add visual studio path detection, force visual studio build by explicit parameter, change enumerate dir name to enumerator, add exception handling
+
+  <h2>Installation</h2>
+
+  <h4>Prepare sources</h4>
+  Download <a href="https://github.com/rojarand/libwebcam/archive/master.zip">libwebcam.zip</a>. Extract content to desired libwebcam development directory.
+
+  <!--
+  ###### What is inside
+  Root libwebcam directory contains serveral directories:
+
+  | Directory     | Content                 |
+  | ------------- |-------------------------|
+  | libwebcam     | library source files    |
+  | examples      | example program sources |
+  | scripts       | build scripts           |
+-->
+<div class="bs-callout bs-callout-info">
+  The installation guide differs for Windows and Linux, so it is described separately.
+</div>
+
+
   <ul class="nav nav-tabs">
-    <li class="active"><a data-toggle="tab" href="#home">Home</a></li>
-    <li><a data-toggle="tab" href="#menu1">Menu 1</a></li>
-    <li><a data-toggle="tab" href="#menu2">Menu 2</a></li>
-    <li><a data-toggle="tab" href="#menu3">Menu 3</a></li>
+    <li class="active"><a data-toggle="tab" href="#windows">Windows</a></li>
+    <li><a data-toggle="tab" href="#linux">Linux</a></li>
   </ul>
 
   <div class="tab-content">
-    <div id="home" class="tab-pane fade in active">
-      <h3>HOME</h3>
-      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+    <div id="windows" class="tab-pane fade in active">
+      <div class="bs-callout bs-callout-warning">
+        Note: This guide was tested on Windows 8 and 10 but should work for other Windows version as well.
+      </div>
+      <h4>Complete required software</h4>
+      The installation guide assumes you have already installed:
+      <ul>
+        <li><a href="https://www.visualstudio.com/">Visual Studio IDE (for C++) 2010 or newer</a></li>
+        <li><a href="https://cmake.org/">CMake 2.8.12 or newer</a></li>
+        <li><a href="https://www.microsoft.com/en-us/download/details.aspx?id=8442">Windows 7 SDK</a></li>
+      </ul>
+      <h4>Setup environment</h4>
+      <li><b>Add cmake to your system path</b></li>
+      Open command window and type:
+      <pre>
+        <code>cmake --version</code>
+      </pre>
+      If cmake is not recognized, open Run window (press <kbd>WIN + R</kbd>) and type:
+      <pre>
+        <code>sysdm.cpl</code>
+      </pre>
+      In advanced tab click Environment Variables button. Find Path variable in System Variables list. Click edit button and add your CMake\bin directory path (ie. C:\Program Files (x86)\CMake\bin).
+      <div class="bs-callout bs-callout-warning">
+        Note: Each path entry is separated by ;
+      </div>
+
+      Reopen your command window and type again:
+      <pre>
+        <code>cmake --version</code>
+      </pre>
+      If command is recognized, make sure cmake meets minimal version requirement. If command is not recognized, fix your cmake availibity in command window.
+
+      <li><b>Update baseclass project</b></li>
+      Launch Visual Studio IDE in administrator mode. Open baseclass.vcproj placed in Windows 7 SDK installation (ie. C:\Program Files\Microsoft SDKs\Windows\v7.1\Samples\multimedia\directshow\baseclasses\) and proceed coversion. Baseclass.vcproj will be converted to digestible baseclass.vxcproj version.
+      <div class="bs-callout bs-callout-warning">
+      Note: Visual Studio must be launched in administrator mode because conversion writes to write protected directory
+      </div>
+      <li><b>Build library</b></li>
+
+      Build process creates (inside build directory):
+      - static webcam.lib library (debug and release),
+      - Visual Studio project files,
+      - Visual Studio solution files.
+
+      Open command window in administrator mode. Navigate to extracted libwebcam directory and type:
+      <pre>
+        <code>ms_cmake.bat build</code>
+      </pre>
+      The command will start libwebcam build process.
+
     </div>
-    <div id="menu1" class="tab-pane fade">
-      <h3>Menu 1</h3>
-      <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-    </div>
-    <div id="menu2" class="tab-pane fade">
-      <h3>Menu 2</h3>
-      <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.</p>
-    </div>
-    <div id="menu3" class="tab-pane fade">
-      <h3>Menu 3</h3>
-      <p>Eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
+    <div id="linux" class="tab-pane fade">
+      <div class="bs-callout bs-callout-warning">
+        Note: This guide was tested on Raspbian.
+        Work in progress...
+      </div>
     </div>
   </div>
 </div>
 
-	</body>
+
+
+
+
+
+
+
+
+</body>
 </html>
