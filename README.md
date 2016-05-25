@@ -1,7 +1,7 @@
 # libwebcam
 ## Lightweigh C++ webcam library
 
-### What is does
+### What it does
 Provides access to your USB webcam using object oriented aproach. 
 
 ### Main features:
@@ -60,3 +60,39 @@ Contributions are always welcome!
 
 [installation guide]: http://rojarand.github.io/libwebcam
 [Robert Andrzejczyk]: https://github.com/rojarand
+
+
+```c++
+#include <libwebcam/webcam.h>
+...
+int main(){
+  //check if there is at least one webcam connected to the computer
+  const webcam::device_info_enumeration enumeration = webcam::enumerator::enumerate();
+  const size_t count = enumeration.count();
+  if (count == 0){
+    std::cout << "There is no webcam available on this computer" << std::endl;
+    return 0;
+  }
+
+  const webcam::device_info & device_info = enumeration.get(0);
+  const webcam::video_info_enumeration & video_info_enumeration =
+    device_info.get_video_info_enumeration();
+  const webcam::video_info & video_info = video_info_enumeration.get(0);
+
+  //setup video_settings
+  webcam::video_settings video_settings;
+  video_settings.set_format(video_info.get_format());
+  video_settings.set_resolution(video_info.get_resolution());
+  video_settings.set_fps(1);
+
+  const unsigned char device_number = 1;
+  webcam::device device(device_number, video_settings);
+  device.open();
+  while(...){
+    webcam::image * image = device.read();
+    ...
+    delete image;
+  }
+  device.close();
+}
+```
