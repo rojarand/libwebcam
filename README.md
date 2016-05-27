@@ -1,7 +1,10 @@
 # libwebcam
 ## Lightweigh C++ webcam library
 
-### Main featues:
+### What it does
+Provides access to your USB webcam using object oriented aproach. 
+
+### Main features:
 * Image acquisition
 * Webcam enumeration
 * C++ 11 compliance
@@ -38,3 +41,13 @@ int main()
 	return 0;
 }
 ```
+### More info
+How to use, install and examples may be found on [project site]
+
+### License
+MIT © [Robert Andrzejczyk]
+### Contribute
+Contributions are always welcome!
+
+[project site]: http://rojarand.github.io/libwebcam
+[Robert Andrzejczyk]: https://github.com/rojarand
