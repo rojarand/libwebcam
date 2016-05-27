@@ -46,7 +46,6 @@ How to use, install and examples may be found on [project site]
 
 ### License
 MIT © [Robert Andrzejczyk]
-# TODO
 ### Contribute
 Contributions are always welcome!
 
