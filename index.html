@@ -38,18 +38,143 @@
   background-color: #f0f7fd;
   border-color: #5bc0de;
   }
+  .hljs{display:block;overflow-x:auto;padding:.5em;background:#002b36;color:#839496;-webkit-text-size-adjust:none}
+  .hljs-template_comment,.diff .hljs-header,.hljs-doctype,.hljs-pi,.lisp .hljs-string,.hljs-javadoc{color:#586e75}
+  .hljs-keyword,.hljs-winutils,.method,.hljs-addition,.css .hljs-tag,.hljs-request,.hljs-status,.nginx .hljs-title{color:#859900}
+  .hljs-number,.hljs-command,.hljs-string,.hljs-tag .hljs-value,.hljs-rules .hljs-value,.hljs-phpdoc,.hljs-dartdoc,.tex .hljs-formula,.hljs-regexp,.hljs-hexcolor,.hljs-link_url{color:#2aa198}
+  .hljs-title,.hljs-localvars,.hljs-chunk,.hljs-decorator,.hljs-built_in,.hljs-identifier,.vhdl .hljs-literal,.hljs-id,.css
+  .hljs-function{color:#268bd2}.hljs-attribute,.hljs-variable,.lisp .hljs-body,.smalltalk .hljs-number,.hljs-constant,.hljs-class .hljs-title,.hljs-parent,.hljs-type,
+  .hljs-link_reference{color:#b58900}
+  .hljs-preprocessor,.hljs-preprocessor .hljs-keyword,.hljs-pragma,.hljs-shebang,.hljs-symbol,.hljs-symbol .hljs-string,.diff .hljs-change,.hljs-special,.hljs-attr_selector,.hljs-subst,.hljs-cdata,.css .hljs-pseudo,.hljs-header{color:#cb4b16}.hljs-deletion,.hljs-important{color:#dc322f}.hljs-link_label{color:#6c71c4}.tex .hljs-formula{background:#073642}
+  .hljs-comment{color:#d9534f;font-weight:bold;}
   </style>
 </head>
 <body>
 
 
 <div class="container">
-  TODO: Add visual studio path detection, force visual studio build by explicit parameter, change enumerate dir name to enumerator, add exception handling
+  <h1>libwebcam</h1>
+  <ul>
+    <li><a href="#how_to_use">How to use</a></li>
+    <li><a href="#important_notes">Important notes</a></li>
+    <li><a href="#installation">Installation</a></li>
+    <li><a href="#examples">Examples</a></li>
+  </ul>
+  <div id="how_to_use">
+	<h2>How to use</h2>
+  </div>
+  <p>
+    Install library using <a href="#installation">installation</a> guide.
+  </p>
+  <p>
+    In source code:
+    <li>Include webcam.h header file</li>
+    <li>Enumerate for available webcams</li>
+    <li>Setup webcam::video_settings using enumerated video parameters</li>
+    <li>Create instance of webcam::device passing number of device and video_settings</li>
+    <li>Open device</li>
+    <li>Read images</li>
+    <li>Close device</li>
+    <li>Wrap code in try-catch block</li>
+  </p>
+  <p>
+    Link against webcam library
+  <p>
+  <div>
 
-  <h2>Installation</h2>
+  <pre><code class="language-c++">...
+<span class="hljs-preprocessor">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;libwebcam/webcam.h&gt;</span></span> //<span class="hljs-comment">include header</span>
+...
+<span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span>{
+  <span class="hljs-keyword">try</span>{
+    <span class="hljs-comment">//enumerate for available webcams</span>
+    <span class="hljs-keyword">const</span> webcam::device_info_enumeration enumeration =
+      webcam::enumerator::enumerate();
+    <span class="hljs-keyword">const</span> size_t count = enumeration.count();
+    <span class="hljs-keyword">if</span> (count == <span class="hljs-number">0</span>){<span class="hljs-comment">//if there is no webcam available... exit</span>
+      <span class="hljs-built_in">std</span>::<span class="hljs-built_in">cout</span> &lt;&lt; <span class="hljs-string">"There is no webcam available on this computer"</span>;
+      <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;
+    }
 
+    <span class="hljs-comment">//get first enumerated settings</span>
+    <span class="hljs-keyword">const</span> webcam::device_info device_info = enumeration.get(<span class="hljs-number">0</span>);
+    <span class="hljs-keyword">const</span> webcam::video_info_enumeration &amp; video_info_enum =
+      device_info.get_video_info_enumeration();
+    <span class="hljs-keyword">const</span> webcam::video_info &amp; video_info = video_info_enum.get(<span class="hljs-number">0</span>);
+
+    <span class="hljs-comment">//setup video_settings</span>
+    webcam::video_settings video_settings;
+    video_settings.set_format(video_info.get_format());
+    video_settings.set_resolution(video_info.get_resolution());
+    video_settings.set_fps(<span class="hljs-number">1</span>);
+
+    <span class="hljs-keyword">const</span> unsigned char device_number = <span class="hljs-number">1</span>;<span class="hljs-comment">//setup device number</span>
+    webcam::<span class="hljs-function">device device<span class="hljs-params">(device_number, video_settings)</span></span>;
+    device.open();<span class="hljs-comment">//open device</span>
+    <span class="hljs-keyword">while</span>(...){
+      webcam::image * image = device.read();<span class="hljs-comment">//read images</span>
+      ...
+      <span class="hljs-keyword">delete</span> image;<span class="hljs-comment">//delete unused image</span>
+    }
+    device.close();<span class="hljs-comment">//close device</span>
+  }
+  <span class="hljs-keyword">catch</span> (<span class="hljs-keyword">const</span> webcam::webcam_exception &amp; exc_){
+    <span class="hljs-built_in">std</span>::<span class="hljs-built_in">cout</span> &lt;&lt; <span class="hljs-string">"error occured: "</span> &lt;&lt; exc_.what() &lt;&lt; <span class="hljs-built_in">std</span>::<span class="hljs-built_in">endl</span>;
+  }
+}
+</code></pre>
+</div>
+  <div id="important_notes">
+	<h2>Important notes</h2>
+  </div>
+  <li>Supported formats and resolutions</li>
+  <p>
+    Before you open device make sure that webcam supports desired video format and resolution.
+    Result of webcam::enumerator::enumerate() contains such information for each webcam.
+    <strong>If you set up unsupported parameters there will be exception thrown.</strong>
+  </p>
+  <div class="bs-callout bs-callout-info">
+    Under Windows you can also set up format_BMP24 for all webcams despite it is not listed in enumeration.
+  </div>
+  <li>Device numbering</li>
+  <p>
+    Device numbering <strong>starts from 1 not from 0</strong>.
+  </p>
+  <pre><code>webcam::<span class="hljs-function">device device<span class="hljs-params">(<span class="hljs-number">1</span>, video_settings)</span></span><span class="hljs-comment">//use first device</span>;
+webcam::<span class="hljs-function">device device<span class="hljs-params">(<span class="hljs-number">2</span>, video_settings)</span></span><span class="hljs-comment">//use second device</span>;</code></pre>
+  <li>read result is never NULL</li>
+  <p>
+    <code>read()</code> method blocks only for specified amount of time.
+    If there is problem with image acquisition returned <code>webcam::image *</code>
+    <strong>is never NULL, but it may be empty</strong>.
+  </p>
+  <pre><code>webcam::video_settings video_settings;
+video_settings.set_fps(<span class="hljs-number">5</span>);<span class="hljs-comment">//set 5 frame per second, read blocks for about 200 ms</span>
+webcam::image * image = device.read();<span class="hljs-comment">//image is never NULL</span>
+if(image->is_empty()){<span class="hljs-comment">//but it may be empty</span>
+  return;
+}</code></pre>
+<li>Extended enumeration results</li>
+Enumeration implementation uses records stored in usb.ids file which is part of the library.
+It is regular text file containing such information as vendor and model of usb device identified by hexadecimal index.
+<pre>...
+046c  Toshiba Corp., Digital Media Equipment
+046d  Logitech, Inc.
+  0801  QuickCam Home
+  0802  Webcam C200
+...
+</pre>
+<div class="bs-callout bs-callout-info">
+  Note: usb.ids must be present in working process folder in order to obtain extended enumeration results.
+</div>
+<div class="bs-callout bs-callout-warning">
+  Note: Extended enumeration is supported only on Windows but it will be on Linux soon.
+</div>
+  <div id="installation">
+    <h2>Installation</h2>
+  </div>
   <h4>Prepare sources</h4>
-  Download <a href="https://github.com/rojarand/libwebcam/archive/master.zip">libwebcam.zip</a>. Extract content to desired libwebcam development directory.
+  Download <a href="https://github.com/rojarand/libwebcam/archive/master.zip">libwebcam-master.zip</a>. Extract content to desired libwebcam development directory.
 
   <!--
   ###### What is inside
@@ -73,9 +198,14 @@
 
   <div class="tab-content">
     <div id="windows" class="tab-pane fade in active">
+
       <div class="bs-callout bs-callout-warning">
         Note: This guide was tested on Windows 8 and 10 but should work for other Windows version as well.
       </div>
+      <p>
+        The installation process produces static library webcam.lib (debug and release).
+        As a result of installation, there will be Visual Studio project file which should be added to your solution.
+      </p>
       <h4>Complete required software</h4>
       The installation guide assumes you have already installed:
       <ul>
@@ -86,59 +216,80 @@
       <h4>Setup environment</h4>
       <li><b>Add cmake to your system path</b></li>
       Open command window and type:
-      <pre>
-        <code>cmake --version</code>
-      </pre>
+      <pre><code>cmake --version</code></pre>
       If cmake is not recognized, open Run window (press <kbd>WIN + R</kbd>) and type:
-      <pre>
-        <code>sysdm.cpl</code>
-      </pre>
+      <pre><code>sysdm.cpl</code></pre>
       In advanced tab click Environment Variables button. Find Path variable in System Variables list. Click edit button and add your CMake\bin directory path (ie. C:\Program Files (x86)\CMake\bin).
       <div class="bs-callout bs-callout-warning">
         Note: Each path entry is separated by ;
       </div>
 
       Reopen your command window and type again:
-      <pre>
-        <code>cmake --version</code>
-      </pre>
+      <pre><code>cmake --version</code></pre>
       If command is recognized, make sure cmake meets minimal version requirement. If command is not recognized, fix your cmake availibity in command window.
 
       <li><b>Update baseclass project</b></li>
       Launch Visual Studio IDE in administrator mode. Open baseclass.vcproj placed in Windows 7 SDK installation (ie. C:\Program Files\Microsoft SDKs\Windows\v7.1\Samples\multimedia\directshow\baseclasses\) and proceed coversion. Baseclass.vcproj will be converted to digestible baseclass.vxcproj version.
       <div class="bs-callout bs-callout-warning">
-      Note: Visual Studio must be launched in administrator mode because conversion writes to write protected directory
+      Note: Visual Studio must be launched in administrator mode because conversion writes to write protected directory.
       </div>
       <li><b>Build library</b></li>
 
       Build process creates (inside build directory):
-      - static webcam.lib library (debug and release),
-      - Visual Studio project files,
-      - Visual Studio solution files.
-
+      <ol>
+      <li>static webcam.lib library (debug and release),</li>
+      <li>Visual Studio project files,</li>
+      <li>Visual Studio solution.</li>
+    </ol>
       Open command window in administrator mode. Navigate to extracted libwebcam directory and type:
-      <pre>
-        <code>ms_cmake.bat build</code>
-      </pre>
+      <pre><code>ms_cmake.bat build</code></pre>
       The command will start libwebcam build process.
 
     </div>
     <div id="linux" class="tab-pane fade">
       <div class="bs-callout bs-callout-warning">
-        Note: This guide was tested on Raspbian.
-        Work in progress...
+        Note: This guide is compatibile with Debian based Linux distributions. If you have other distribution, use your platform specific commands.
       </div>
+      <p>
+        The installation process produces static library libwebcam.a.
+        Source code and library are copied to default system library and source folders.
+      </p>
+      Open terminal and ...
+      <li><b>Install required software</b></li>
+      Install c++ compiler, cmake and unzip.
+      <pre><code>sudo apt-get install g++
+sudo apt-get install cmake
+sudo apt-get install unzip</code></pre>
+      <li><b>Build and install</b></li>
+      cd to directory where your placed libwebcam-master.zip and extract files.
+      <pre><code>unzip libwebcam-master.zip</code></pre>
+      cd to installation folder
+      <pre><code>cd libwebcam-master/installation/</code></pre>
+      Run build script
+      <pre><code>sudo sh cmake.sh build
+sudo sh cmake.sh install</code></pre>
     </div>
+    If everything went ok, you are able to use the library in your project.
   </div>
+  <div id="examples">
+    <h2>Examples</h2>
+  </div>
+  <p>Examples directory contains several short examples which demonstrates how to use libwebcam library.</p>
+  <li><b>bitmap_writer</b></li>
+  <p>Writes 100 bitmaps (dib) to disk.</p>
+  <div class="bs-callout bs-callout-danger">
+    Note: This example works only on Windows.
+  </div>
+  <li><b>enumerator</b></li>
+  <p>Enumerates and prints informations about webcams available on the computer.</p>
+  <li><b>grabber</b></li>
+  <p>Reads images for 5 seconds from first webcam with 10/s frame rate.</p>
+  <p>Example building process requires libwebcam to be installed. Each example is build separetly.
+    To build example open terminal/command window. Change directory to specified example directory. Type:
+  </p>
+  For Linux: <pre>./cmake.sh build</pre>
+  For Windows: <pre>ms_cmake.bat build</pre>
 </div>
-
-
-
-
-
-
-
-
 
 </body>
 </html>
