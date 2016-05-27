@@ -49,7 +49,6 @@ MIT © [Robert Andrzejczyk]
 # TODO
 ### Contribute
 Contributions are always welcome!
-### Contact
 
 [project site]: http://rojarand.github.io/libwebcam
 [Robert Andrzejczyk]: https://github.com/rojarand
