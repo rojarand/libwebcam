@@ -55,21 +55,21 @@ namespace webcam
 		const video_settings & operator=(const video_settings & video_settings_);
 
 		const format & get_format()const;
-		unsigned char get_fps()const;
+		unsigned int get_fps()const;
 		unsigned int get_height()const;
 		unsigned char get_quality()const;
 		const resolution & get_resolution()const;
 		unsigned int get_width()const;
 
 		void set_format(const format & format_);
-		void set_fps(unsigned char fps_);
+		void set_fps(unsigned int fps_);
 		void set_quality(unsigned char quality_);
 		void set_resolution(const resolution & resolution_);
 	protected:
 		void free_format();
 		void assign_from(const video_settings & video_settings_);
 		format * _format;
-		unsigned char _fps;
+		unsigned int _fps;
 		unsigned char _quality;
 		resolution _resolution;
 	};

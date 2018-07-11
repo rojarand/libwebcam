@@ -87,7 +87,7 @@ namespace webcam
 	{
 		return *_format;
 	}
-	unsigned char video_settings::get_fps()const
+	unsigned int video_settings::get_fps()const
 	{
 		return _fps;
 	}
@@ -114,7 +114,7 @@ namespace webcam
 		_format = format_.clone();
 	}
 
-	void video_settings::set_fps(unsigned char fps_)
+	void video_settings::set_fps(unsigned int fps_)
 	{
 		_fps = fps_;
 	}
