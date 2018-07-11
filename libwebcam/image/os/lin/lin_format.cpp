@@ -17,7 +17,7 @@ namespace webcam
 		native_format format = get_native_format();
 		if(format == 0)
 		{
-			return "";
+			return "UNKNOWN_0";
 		}
 
 		char four_cc_str[5] =
@@ -35,15 +35,27 @@ namespace webcam
 	{
 		return 0;
 	}
+	std::string format_UNKN::get_name()const
+	{
+		return "UNKN";
+	}
 
 	native_format format_BGR8::get_native_format()const
 	{
 		return 0;
 	}
+	std::string format_BGR8::get_name()const
+	{
+		return "BGR8";
+	}
 
 	native_format format_RGB24::get_native_format()const
 	{
 		return V4L2_PIX_FMT_RGB24;
+	}
+	std::string format_RGB24::get_name()const
+	{
+		return "RGB24";
 	}
 
 	native_format format_BMP24::get_native_format()const
@@ -55,10 +67,18 @@ namespace webcam
 	{
 		return 0;
 	}
+	std::string format_I420::get_name()const
+	{
+		return "I420";
+	}
 
 	native_format format_YUY2::get_native_format()const
 	{
 		return 0;
+	}
+	std::string format_YUY2::get_name()const
+	{
+		return "YUY2";
 	}
 
 	native_format format_YUYV::get_native_format()const

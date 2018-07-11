@@ -22,7 +22,7 @@ namespace webcam
 	{
 	public:
 		virtual ~format();
-		std::string get_name()const;
+		virtual std::string get_name()const;
 		virtual native_format get_native_format()const = 0;
 		virtual format * clone()const = 0;
 		bool operator==(const format & format_)const;
@@ -32,6 +32,7 @@ namespace webcam
 	class format_UNKN : public format
 	{
 	public:
+        virtual std::string get_name()const;
 		virtual native_format get_native_format()const;
 		virtual format * clone()const;
 	};
@@ -39,6 +40,7 @@ namespace webcam
 	class format_BGR8 : public format
 	{
 	public:
+        virtual std::string get_name()const;
 		virtual native_format get_native_format()const;
 		virtual format * clone()const;
 	};
@@ -53,6 +55,7 @@ namespace webcam
 	class format_RGB24 : public format
 	{
 	public:
+        virtual std::string get_name()const;
 		virtual native_format get_native_format()const;
 		virtual format * clone()const;
 	};
@@ -60,6 +63,7 @@ namespace webcam
 	class format_I420 : public format
 	{
 	public:
+        virtual std::string get_name()const;
 		virtual native_format get_native_format()const;
 		virtual format * clone()const;
 	};
@@ -67,6 +71,7 @@ namespace webcam
 	class format_YUY2 : public format
 	{
 	public:
+        virtual std::string get_name()const;
 		virtual native_format get_native_format()const;
 		virtual format * clone()const;
 	};
