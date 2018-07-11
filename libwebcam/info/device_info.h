@@ -17,8 +17,8 @@ namespace webcam
 
 		const model_info & get_model_info()const;
 		void set_model_info(model_info & model_info_);
-		bool supports_format(const format & format_)const;
-		resolution get_highest_resolution(const format & format_)const;
+		bool supports_format(const Format & format_)const;
+		resolution get_highest_resolution(const Format & format_)const;
 	private:
 		model_info _model_info;
 		video_info_enumeration _video_info_enumeration;

@@ -58,7 +58,7 @@ namespace webcam
 	////////////////////////////////////////////////////////
 
 	video_settings::video_settings()
-		: _format(new format_UNKN())
+		: _format(new Format_UNKN(0))
 		, _fps(FPS_Slow)
 		, _quality(Quality_Medium)
 	{
@@ -83,7 +83,7 @@ namespace webcam
 		return *this;
 	}
 
-	const format & video_settings::get_format()const
+	const Format & video_settings::get_format()const
 	{
 		return *_format;
 	}
@@ -108,7 +108,7 @@ namespace webcam
 		return _resolution.get_width();
 	}
 
-	void video_settings::set_format(const format & format_)
+	void video_settings::set_format(const Format & format_)
 	{
 		free_format();
 		_format = format_.clone();

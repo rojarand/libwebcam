@@ -30,7 +30,7 @@ namespace webcam
 		_model_info = model_info_;
 	}
 
-	bool device_info::supports_format(const format & format_)const
+	bool device_info::supports_format(const Format & format_)const
 	{
 		size_t count = _video_info_enumeration.count();
 		for (size_t index = 0; index < count; index++){
@@ -43,7 +43,7 @@ namespace webcam
 		return false;
 	}
 
-	resolution device_info::get_highest_resolution(const format & format_)const
+	resolution device_info::get_highest_resolution(const Format & format_)const
 	{
 		resolution current_resolution(0, 0);
 		size_t count = _video_info_enumeration.count();

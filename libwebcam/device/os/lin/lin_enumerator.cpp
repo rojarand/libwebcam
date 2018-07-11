@@ -122,7 +122,7 @@ video_info_enumeration enumerator::get_video_info_enumeration(int fd_)
 
 	while( fmt_enum.next(fd_) )
 	{
-		const format * format = create_format(vid_fmtdesc.pixelformat);
+		const Format * format = create_format(vid_fmtdesc.pixelformat);
 		std::vector<webcam::resolution> resolutions = get_resolutions(fd_, vid_fmtdesc.pixelformat);
 		for(const webcam::resolution & resolution: resolutions)
 		{

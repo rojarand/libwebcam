@@ -3,87 +3,96 @@
 namespace webcam
 {
 
-	format::~format()
+	Format::~Format()
 	{
 
 	}
 	
-	bool format::operator == (const format & format_)const
+	bool Format::operator == (const Format & format_)const
 	{
 		return native_equals(format_.get_native_format());
 	}
 
-	format * format_UNKN::clone()const
-	{
-		return new format_UNKN();
+	Format_UNKN::Format_UNKN( const native_format& native_format_ ) : format(native_format_)
+    {
 	}
 
-	format * format_BGR8::clone()const
+	native_format Format_UNKN::get_native_format() const
 	{
-		return new format_BGR8();
+		return this->format;
 	}
 
-	format * format_BMP24::clone()const
+	Format * Format_UNKN::clone()const
 	{
-		return new format_BMP24();
+		return new Format_UNKN(this->format);
 	}
 
-	format * format_RGB24::clone()const
+	Format * Format_BGR8::clone()const
 	{
-		return new format_RGB24();
+		return new Format_BGR8();
 	}
 
-	format * format_I420::clone()const
+	Format * Format_BMP24::clone()const
 	{
-		return new format_I420();
+		return new Format_BMP24();
 	}
 
-	format * format_YUY2::clone()const
+	Format * Format_RGB24::clone()const
 	{
-		return new format_YUY2();
+		return new Format_RGB24();
 	}
 
-	format * format_YUYV::clone()const
+	Format * Format_I420::clone()const
 	{
-		return new format_YUYV();
+		return new Format_I420();
 	}
 
-	format * format_H264::clone()const
+	Format * Format_YUY2::clone()const
 	{
-		return new format_H264();
+		return new Format_YUY2();
 	}
 
-	format * format_JPEG::clone()const
+	Format * Format_YUYV::clone()const
 	{
-		return new format_JPEG();
+		return new Format_YUYV();
 	}
 
-	format * format_MJPEG::clone()const
+	Format * Format_H264::clone()const
 	{
-		return new format_MJPEG();
+		return new Format_H264();
 	}
 
-	format * create_format(native_format native_format_)
+	Format * Format_JPEG::clone()const
 	{
-		const format_MJPEG FORMAT_MJPEG;
-		const format_JPEG FORMAT_JPEG;
-		const format_I420 FORMAT_I420;
-		const format_YUYV FORMAT_YUYV;
-		const format_YUY2 FORMAT_YUY2;
-		const format_BMP24 FORMAT_BMP24;
-		const format_RGB24 FORMAT_RGB24;
-		const format_BGR8 FORMAT_BGR8;
+		return new Format_JPEG();
+	}
 
-		const format * const SUPPORTED_FORMATS[] = {
+	Format * Format_MJPEG::clone()const
+	{
+		return new Format_MJPEG();
+	}
+
+	Format * create_format(native_format native_format_)
+	{
+		const Format_MJPEG FORMAT_MJPEG;
+		const Format_JPEG FORMAT_JPEG;
+		const Format_I420 FORMAT_I420;
+		const Format_YUYV FORMAT_YUYV;
+		const Format_YUY2 FORMAT_YUY2;
+		const Format_BMP24 FORMAT_BMP24;
+		const Format_RGB24 FORMAT_RGB24;
+		const Format_BGR8 FORMAT_BGR8;
+
+		const Format * const SUPPORTED_FORMATS[] = {
 				&FORMAT_MJPEG, &FORMAT_JPEG, &FORMAT_I420, &FORMAT_YUYV,
 				&FORMAT_YUY2, &FORMAT_BMP24, &FORMAT_RGB24, &FORMAT_BGR8 };
 
-		for(const format * fmt: SUPPORTED_FORMATS){
+		for(const Format * fmt: SUPPORTED_FORMATS){
 
 			if (fmt->native_equals(native_format_)){
 				return fmt->clone();
 			}
 		}
-		return new format_UNKN();
+		return new Format_UNKN(native_format_);
 	}
 }

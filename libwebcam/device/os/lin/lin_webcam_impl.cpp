@@ -136,7 +136,7 @@ namespace webcam
 		fmt.type                = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 
 		const video_settings & video_settings = _device.get_video_settings();
-		const format & format = video_settings.get_format();
+		const Format & format = video_settings.get_format();
 		fmt.fmt.pix.width       = video_settings.get_width();
 		fmt.fmt.pix.height      = video_settings.get_height();
 		fmt.fmt.pix.field       = V4L2_FIELD_INTERLACED;
@@ -147,7 +147,7 @@ namespace webcam
 			throw webcam_exception("can not set video format", errno, _camera_number);
 		}
 
-		bool is_jpeg = (format==format_JPEG()) || (format==format_MJPEG());
+		bool is_jpeg = (format==Format_JPEG()) || (format==Format_MJPEG());
 		if(is_jpeg)
 		{
 			struct v4l2_jpegcompression jpeg_compression;

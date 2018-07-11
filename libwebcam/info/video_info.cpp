@@ -2,7 +2,7 @@
 
 namespace webcam
 {
-	video_info::video_info(const resolution & resolution_, const format & format_, int image_byte_count_)
+	video_info::video_info(const resolution & resolution_, const Format & format_, int image_byte_count_)
 		: _resolution(resolution_)
 		, _format(format_.clone())
 		, _image_byte_count(image_byte_count_)
@@ -27,7 +27,7 @@ namespace webcam
 		return _resolution;
 	}
 
-	const format & video_info::get_format()const
+	const Format & video_info::get_format()const
 	{
 		return *_format;
 	}

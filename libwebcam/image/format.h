@@ -18,92 +18,95 @@ namespace webcam
 	typedef unsigned int native_format;
 #endif
 
-	class format
+	class Format
 	{
 	public:
-		virtual ~format();
+		virtual ~Format();
 		virtual std::string get_name()const;
 		virtual native_format get_native_format()const = 0;
-		virtual format * clone()const = 0;
-		bool operator==(const format & format_)const;
+		virtual Format * clone()const = 0;
+		bool operator==(const Format & format_)const;
 		bool native_equals(const native_format & native_format_)const;
+
 	};
 
-	class format_UNKN : public format
+	class Format_UNKN : public Format
+	{
+	public:
+		Format_UNKN( const native_format& native_format_ );
+
+		virtual native_format get_native_format()const;
+		virtual Format * clone()const;
+		native_format format;
+	};
+
+	class Format_BGR8 : public Format
 	{
 	public:
         virtual std::string get_name()const;
 		virtual native_format get_native_format()const;
-		virtual format * clone()const;
+		virtual Format * clone()const;
 	};
 
-	class format_BGR8 : public format
+	class Format_BMP24 : public Format
+	{
+	public:
+		virtual native_format get_native_format()const;
+		virtual Format * clone()const;
+	};
+
+	class Format_RGB24 : public Format
 	{
 	public:
         virtual std::string get_name()const;
 		virtual native_format get_native_format()const;
-		virtual format * clone()const;
+		virtual Format * clone()const;
 	};
 
-	class format_BMP24 : public format
-	{
-	public:
-		virtual native_format get_native_format()const;
-		virtual format * clone()const;
-	};
-
-	class format_RGB24 : public format
+	class Format_I420 : public Format
 	{
 	public:
         virtual std::string get_name()const;
 		virtual native_format get_native_format()const;
-		virtual format * clone()const;
+		virtual Format * clone()const;
 	};
 
-	class format_I420 : public format
+	class Format_YUY2 : public Format
 	{
 	public:
         virtual std::string get_name()const;
 		virtual native_format get_native_format()const;
-		virtual format * clone()const;
+		virtual Format * clone()const;
 	};
 
-	class format_YUY2 : public format
-	{
-	public:
-        virtual std::string get_name()const;
-		virtual native_format get_native_format()const;
-		virtual format * clone()const;
-	};
-
-	class format_YUYV : public format
+	class Format_YUYV : public Format
 	{
 	public:
 		virtual native_format get_native_format()const;
-		virtual format * clone()const;
+		virtual Format * clone()const;
 	};
 
-	class format_H264 : public format
+	class Format_H264 : public Format
 	{
 	public:
 		virtual native_format get_native_format()const;
-		virtual format * clone()const;
+		virtual Format * clone()const;
 	};
 
-	class format_JPEG: public format
+	class Format_JPEG: public Format
 	{
 	public:
 		virtual native_format get_native_format()const;
-		virtual format * clone()const;
+		virtual Format * clone()const;
 	};
 
-	class format_MJPEG : public format
+	class Format_MJPEG : public Format
 	{
 	public:
 		virtual native_format get_native_format()const;
-		virtual format * clone()const;
+		virtual Format * clone()const;
 	};
 
-	format * create_format(native_format native_format_);
+    Format * create_format(native_format native_format_);
 
 }
