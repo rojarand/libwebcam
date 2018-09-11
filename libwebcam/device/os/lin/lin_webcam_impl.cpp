@@ -446,36 +446,73 @@ namespace webcam
 
 	int lin_webcam_impl::set_focus( bool automatic , int value ) {
 
+//		if( automatic ) {
+//			return set_control(_fd, V4L2_CID_FOCUS_AUTO, 1);
+//		} else {
+//			int ret = set_control(_fd, V4L2_CID_FOCUS_AUTO, 0);
+//			if( ret != 0 )
+//				return ret;
+//			return set_control(_fd, _device.get_device_info().get_focus_info(), V4L2_CID_FOCUS_ABSOLUTE, value);
+//		}
+		const ControlInfo& info = _device.get_device_info().get_focus_info();
+
 		if( automatic ) {
-			return set_control(_fd, V4L2_CID_FOCUS_AUTO, 1);
+			if( info.automatic )
+				return set_control(_fd, V4L2_CID_FOCUS_AUTO, 1);
+			else
+				return set_control(_fd, info, V4L2_CID_FOCUS_ABSOLUTE, info.default_value);
 		} else {
-			int ret = set_control(_fd, V4L2_CID_FOCUS_AUTO, 0);
-			if( ret != 0 )
-				return ret;
-			return set_control(_fd, _device.get_device_info().get_focus_info(), V4L2_CID_FOCUS_ABSOLUTE, value);
+//			if( info.automatic ) {
+				int ret = set_control(_fd, V4L2_CID_FOCUS_AUTO, 0);
+				if( ret != 0 )
+					return ret;
+//			}
+			return set_control(_fd, info, V4L2_CID_FOCUS_ABSOLUTE, value);
 		}
 	}
 
 	int lin_webcam_impl::set_exposure( bool automatic , int value ) {
+//		if( automatic ) {
+//			return set_control(_fd, V4L2_CID_EXPOSURE_AUTO, V4L2_EXPOSURE_AUTO);
+//		} else {
+//			int ret = set_control(_fd, V4L2_CID_EXPOSURE_AUTO, V4L2_EXPOSURE_MANUAL);
+//			if( ret != 0 )
+//				return ret;
+//			return set_control(_fd, _device.get_device_info().get_exposure_info(), V4L2_CID_EXPOSURE_ABSOLUTE, value);
+//		}
+
+		const ControlInfo& info = _device.get_device_info().get_exposure_info();
+
 		if( automatic ) {
-			return set_control(_fd, V4L2_CID_EXPOSURE_AUTO, V4L2_EXPOSURE_AUTO);
+			if( info.automatic )
+				return set_control(_fd, V4L2_CID_EXPOSURE_AUTO, V4L2_EXPOSURE_AUTO);
+			else
+				return set_control(_fd, info, V4L2_CID_EXPOSURE_ABSOLUTE, info.default_value);
 		} else {
-			int ret = set_control(_fd, V4L2_CID_EXPOSURE_AUTO, V4L2_EXPOSURE_MANUAL);
-			if( ret != 0 )
-				return ret;
-			return set_control(_fd, _device.get_device_info().get_exposure_info(), V4L2_CID_EXPOSURE_ABSOLUTE, value);
+			if( info.automatic ) {
+				int ret = set_control(_fd, V4L2_CID_EXPOSURE_AUTO, V4L2_EXPOSURE_MANUAL);
+				if( ret != 0 )
+					return ret;
+			}
+			return set_control(_fd, info, V4L2_CID_EXPOSURE_ABSOLUTE, value);
 		}
 	}
 
 	int lin_webcam_impl::set_gain( bool automatic , int value ) {
+		const ControlInfo& info = _device.get_device_info().get_gain_info();
 
 		if( automatic ) {
-			return set_control(_fd, V4L2_CID_AUTOGAIN, 1);
+			if( info.automatic )
+				return set_control(_fd, V4L2_CID_AUTOGAIN, true);
+			else
+				return set_control(_fd, info, V4L2_CID_GAIN, info.default_value);
 		} else {
-			int ret = set_control(_fd, V4L2_CID_AUTOGAIN, 0);
-			if( ret != 0 )
-				return ret;
-			return set_control(_fd, _device.get_device_info().get_gain_info(), V4L2_CID_GAIN, value);
+			if( info.automatic ) {
+				int ret = set_control(_fd, V4L2_CID_AUTOGAIN, false);
+				if( ret != 0 )
+					return ret;
+			}
+			return set_control(_fd, info, V4L2_CID_GAIN, value);
 		}
 	}
 }

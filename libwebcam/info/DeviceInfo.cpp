@@ -3,7 +3,8 @@
 namespace webcam
 {
 	ControlInfo::ControlInfo() {
-		this->available = false;
+		this->automatic = false;
+		this->manual = false;
 		this->min = this->max = this->step = this->default_value = 0;
 	}
 

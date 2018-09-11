@@ -10,7 +10,9 @@ namespace webcam
 	{
 		ControlInfo();
 
-		bool available;
+		// if true then this method of control is available
+		bool automatic;
+		bool manual;
 		int min,max,default_value,step;
 	};
 

@@ -93,9 +93,13 @@ DeviceInfoEnumeration enumerator::enumerate()
 			VideoInfoEnumeration video_enumeration = get_video_info_enumeration(fd);
 			device_info.set_video_info_enumeration(video_enumeration);
 
-            get_video_controls(fd,V4L2_CID_FOCUS_ABSOLUTE,device_info.get_focus_info());
-            get_video_controls(fd,V4L2_CID_EXPOSURE_ABSOLUTE,device_info.get_exposure_info());
-            get_video_controls(fd,V4L2_CID_GAIN,device_info.get_gain_info());
+//			get_automatic_controls(fd, V4L2_CID_FOCUS_AUTO, device_info.get_focus_info());
+			device_info.get_focus_info().automatic = true;
+			get_manual_controls(fd, V4L2_CID_FOCUS_ABSOLUTE, device_info.get_focus_info());
+			get_automatic_controls(fd, V4L2_CID_EXPOSURE_AUTO, device_info.get_exposure_info());
+			get_manual_controls(fd, V4L2_CID_EXPOSURE_ABSOLUTE, device_info.get_exposure_info());
+			get_automatic_controls(fd, V4L2_CID_AUTOGAIN, device_info.get_gain_info());
+			get_manual_controls(fd, V4L2_CID_GAIN, device_info.get_gain_info());
 
 			device_enumeration.put(device_info);
 			close(fd);
@@ -171,13 +175,38 @@ std::vector<webcam::Resolution> enumerator::get_resolutions(int fd_, unsigned in
 	return resolutions;
 }
 
-int enumerator::get_video_controls( int fd , __u32 control , ControlInfo& info )
+int enumerator::get_automatic_controls(int fd, __u32 control, ControlInfo &info)
+{
+	struct v4l2_queryctrl queryctrl;
+	memset(&queryctrl, 0, sizeof(queryctrl));
+	int err = 0;
+
+	info.automatic = false;
+
+	queryctrl.id = control;
+	if ((err = ioctl (fd, VIDIOC_QUERYCTRL, &queryctrl)) < 0) {
+		fprintf (stderr, "ioctl querycontrol error %d \n", errno);
+	} else if (queryctrl.flags & V4L2_CTRL_FLAG_DISABLED) {
+		fprintf (stderr, "control %s disabled \n", (char *) queryctrl.name);
+	} else if (queryctrl.flags & V4L2_CTRL_TYPE_BOOLEAN) {
+		info.automatic = true;
+		return 0;
+	} else if (queryctrl.type & V4L2_CTRL_TYPE_INTEGER) {
+        info.automatic = true;
+		return -1;
+	} else {
+		fprintf (stderr, "control %s unsupported  \n", (char *) queryctrl.name);
+	}
+	return err;
+}
+
+int enumerator::get_manual_controls(int fd, __u32 control, ControlInfo &info)
 {
     struct v4l2_queryctrl queryctrl;
     memset(&queryctrl, 0, sizeof(queryctrl));
     int err = 0;
 
-    info.available = false;
+    info.manual = false;
 
     queryctrl.id = control;
     if ((err = ioctl (fd, VIDIOC_QUERYCTRL, &queryctrl)) < 0) {
@@ -185,11 +214,11 @@ int enumerator::get_video_controls( int fd , __u32 control , ControlInfo& info )
     } else if (queryctrl.flags & V4L2_CTRL_FLAG_DISABLED) {
         fprintf (stderr, "control %s disabled \n", (char *) queryctrl.name);
     } else if (queryctrl.flags & V4L2_CTRL_TYPE_BOOLEAN) {
+        fprintf (stderr, "control %s returned boolean for control  \n", (char *) queryctrl.name);
 //            printf("bool\n");
-        info.available = true;
-        return 0;
+        return -1;
     } else if (queryctrl.type & V4L2_CTRL_TYPE_INTEGER) {
-        info.available = true;
+        info.manual = true;
         info.min = queryctrl.minimum;
         info.max = queryctrl.maximum;
         info.step = queryctrl.step;

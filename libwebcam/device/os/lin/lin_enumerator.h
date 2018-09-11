@@ -27,7 +27,8 @@ private:
 	static ModelInfo get_model_info(int fd_);
 	static VideoInfoEnumeration get_video_info_enumeration(int fd_);
 	static std::vector<Resolution> get_resolutions(int fd_, unsigned int pixelformat_);
-	static int get_video_controls( int fd , __u32 control , ControlInfo& info );
+	static int get_automatic_controls(int fd, __u32 control, ControlInfo &info);
+	static int get_manual_controls(int fd, __u32 control, ControlInfo &info);
 };
 
 } /* namespace core */
