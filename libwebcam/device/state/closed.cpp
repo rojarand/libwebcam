@@ -12,7 +12,7 @@ namespace webcam
 	{
 	}
 
-	void closed::open(device & device_)
+	void closed::open(Device & device_)
 	{
 		try
 		{

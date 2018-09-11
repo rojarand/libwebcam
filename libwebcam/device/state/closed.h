@@ -11,9 +11,9 @@ namespace webcam
 		closed(void);
 		virtual ~closed(void);
 
-		virtual void open(device & device_);
-		virtual void close(device & device_){}
-		virtual void release_safe(device & device_){}
+		virtual void open(Device & device_);
+		virtual void close(Device & device_){}
+		virtual void release_safe(Device & device_){}
 		static closed * instance();
 	};
 

@@ -22,8 +22,8 @@
 namespace webcam
 {
 
-	lin_webcam_impl::lin_webcam_impl(unsigned char camera_number_, device & webcam_)
-		:webcam_impl(camera_number_, webcam_)
+	lin_webcam_impl::lin_webcam_impl(unsigned char camera_number_, Device & webcam_)
+		:WebcamImpl(camera_number_, webcam_)
 	{
 		_fd					= -1;
 	}
@@ -38,7 +38,7 @@ namespace webcam
 		map_memory();
 	}
 
-	image * lin_webcam_impl::read()
+	Image * lin_webcam_impl::read()
 	{
 		wait_for_image();
 		return create_image();
@@ -135,7 +135,7 @@ namespace webcam
 		// v4l2_format
 		fmt.type                = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 
-		const video_settings & video_settings = _device.get_video_settings();
+		const VideoSettings & video_settings = _device.get_video_settings();
 		const Format & format = video_settings.get_format();
 		fmt.fmt.pix.width       = video_settings.get_width();
 		fmt.fmt.pix.height      = video_settings.get_height();
@@ -216,8 +216,8 @@ namespace webcam
 			}
 			unsigned char * mem = reinterpret_cast<unsigned char*>(mem_ptr);
 			unsigned int mem_len = v4l2_buf.length;
-			buffer * buf = new buffer;
-			buf->attach(buffer_data(mem, mem_len));
+			Buffer * buf = new Buffer;
+			buf->attach(BufferData(mem, mem_len));
 			_buffers.push_back(buf);
 		}
 
@@ -256,9 +256,9 @@ namespace webcam
 	void lin_webcam_impl::unmap_memory()
 	{
 		//delete buffers if are allocated
-		for (webcam::buffer * buffer: _buffers)
+		for (webcam::Buffer * buffer: _buffers)
 		{
-			buffer_data buffer_data = buffer->detach();
+			BufferData buffer_data = buffer->detach();
 			void * mem_ptr = (void *)buffer_data.get_data();
 			int length = (int)buffer_data.get_lenght();
 			const int res = ::munmap (mem_ptr, length);
@@ -316,7 +316,7 @@ namespace webcam
 		}
 	}
 
-	image * lin_webcam_impl::create_image()
+	Image * lin_webcam_impl::create_image()
 	{
 		struct v4l2_buffer v4l2_buf;
 
@@ -348,16 +348,16 @@ namespace webcam
 			throw webcam_exception( "can not exchange buffer with the driver - VIDIOC_QBUF fail", _camera_number);
 		}
 
-		const buffer * buf = _buffers[v4l2_buf.index];
+		const Buffer * buf = _buffers[v4l2_buf.index];
 
 		if(0 < len)
 		{
-			webcam::image * image = new webcam::image();
+			webcam::Image * image = new webcam::Image();
 			image->copy_deep(buf->get_data(), len, _device.get_video_settings());
 			return image;
 		}
 
-		return image::create_empty();
+		return Image::create_empty();
 	}
 
 	int lin_webcam_impl::xioctl(int request_, void * argp_)

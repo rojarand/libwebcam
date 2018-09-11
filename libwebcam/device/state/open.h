@@ -12,11 +12,11 @@ namespace webcam
 		~_open(void);
 
 		static _open * instance();
-		virtual void open(device & device_){}
-		virtual void close(device & device_);
-		virtual image * read(device & device_);
-		virtual void set_video_settings(device & device_, const video_settings & video_settings_);
-		virtual void release_safe(device & device_);
+		virtual void open(Device & device_){}
+		virtual void close(Device & device_);
+		virtual Image * read(Device & device_);
+		virtual void set_video_settings(Device & device_, const VideoSettings & video_settings_);
+		virtual void release_safe(Device & device_);
 		virtual bool is_open()const;
 	};
 

@@ -1,4 +1,4 @@
-#include "../../format.h"
+#include "image/Format.h"
 
 #ifdef WIN32
 #include <Fourcc.h>

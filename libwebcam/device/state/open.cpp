@@ -13,7 +13,7 @@ namespace webcam
 	{
 	}
 
-	void _open::close(device & device_)
+	void _open::close(Device & device_)
 	{
 		try
 		{
@@ -34,7 +34,7 @@ namespace webcam
 		return new _open();
 	}
 
-	image * _open::read(device & device_)
+	Image * _open::read(Device & device_)
 	{
 		try
 		{
@@ -49,7 +49,7 @@ namespace webcam
 		}
 	}
 
-	void _open::set_video_settings(device & device_, const video_settings & video_settings_)
+	void _open::set_video_settings(Device & device_, const VideoSettings & video_settings_)
 	{
 		try
 		{
@@ -71,7 +71,7 @@ namespace webcam
 		return true;
 	}
 
-	void _open::release_safe(device & device_)
+	void _open::release_safe(Device & device_)
 	{
 		get_impl(device_).release_safe();
 	}

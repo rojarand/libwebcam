@@ -58,9 +58,9 @@ static bool is_video_device(const char * name)
 	return pos != std::string::npos;
 }
 
-device_info_enumeration enumerator::enumerate()
+DeviceInfoEnumeration enumerator::enumerate()
 {
-	device_info_enumeration device_enumeration;
+	DeviceInfoEnumeration device_enumeration;
 
 	DIR * dp = opendir("/dev");
 	if (dp == nullptr) {
@@ -85,12 +85,12 @@ device_info_enumeration enumerator::enumerate()
 		int fd = open(device_file.c_str(), O_RDONLY);
 		if(ERROR != fd){
 
-			webcam::device_info device_info;
+			webcam::DeviceInfo device_info;
 
-			model_info model_info = get_model_info(fd);
+			ModelInfo model_info = get_model_info(fd);
 			device_info.set_model_info(model_info);
 
-			video_info_enumeration video_enumeration = get_video_info_enumeration(fd);
+			VideoInfoEnumeration video_enumeration = get_video_info_enumeration(fd);
 			device_info.set_video_info_enumeration(video_enumeration);
 
 			device_enumeration.put(device_info);
@@ -101,20 +101,20 @@ device_info_enumeration enumerator::enumerate()
 
 }
 
-model_info enumerator::get_model_info(int fd_)
+ModelInfo enumerator::get_model_info(int fd_)
 {
 	struct v4l2_capability video_cap;
 	int res = ioctl(fd_, VIDIOC_QUERYCAP, &video_cap);
 	if(ERROR != res)
 	{
-		return webcam::model_info(1, (const char*)video_cap.card);
+		return webcam::ModelInfo(1, (const char*)video_cap.card);
 	}
-	return webcam::model_info();
+	return webcam::ModelInfo();
 }
 
-video_info_enumeration enumerator::get_video_info_enumeration(int fd_)
+VideoInfoEnumeration enumerator::get_video_info_enumeration(int fd_)
 {
-	video_info_enumeration enumeration;
+	VideoInfoEnumeration enumeration;
 
 	struct v4l2_fmtdesc vid_fmtdesc;    // Enumerated video formats supported by the device
 	property_enumerator<v4l2_fmtdesc> fmt_enum(vid_fmtdesc, VIDIOC_ENUM_FMT);
@@ -123,10 +123,10 @@ video_info_enumeration enumerator::get_video_info_enumeration(int fd_)
 	while( fmt_enum.next(fd_) )
 	{
 		const Format * format = create_format(vid_fmtdesc.pixelformat);
-		std::vector<webcam::resolution> resolutions = get_resolutions(fd_, vid_fmtdesc.pixelformat);
-		for(const webcam::resolution & resolution: resolutions)
+		std::vector<webcam::Resolution> resolutions = get_resolutions(fd_, vid_fmtdesc.pixelformat);
+		for(const webcam::Resolution & resolution: resolutions)
 		{
-			webcam::video_info video_info(resolution, *format, 0);
+			webcam::VideoInfo video_info(resolution, *format, 0);
 			enumeration.put(video_info);
 		}
 		delete format;
@@ -134,9 +134,9 @@ video_info_enumeration enumerator::get_video_info_enumeration(int fd_)
 	return enumeration;
 }
 
-std::vector<webcam::resolution> enumerator::get_resolutions(int fd_, unsigned int pixelformat_)
+std::vector<webcam::Resolution> enumerator::get_resolutions(int fd_, unsigned int pixelformat_)
 {
-	std::vector<webcam::resolution> resolutions;
+	std::vector<webcam::Resolution> resolutions;
 	struct v4l2_frmsizeenum frmsize;
 	struct v4l2_frmivalenum frmival;
 	memset(&frmival, 0, sizeof(frmival));
@@ -156,7 +156,7 @@ std::vector<webcam::resolution> enumerator::get_resolutions(int fd_, unsigned in
 			frmival.width = width;
 			frmival.height = height;
 
-			webcam::resolution resolution(width, height);
+			webcam::Resolution resolution(width, height);
 			resolutions.push_back(resolution);
 
 			while( frmival_enum.next(fd_) ) {

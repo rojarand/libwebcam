@@ -11,23 +11,23 @@
 #ifndef WIN32
 
 #include <vector>
-#include "../../webcam_impl.h"
+#include "device/WebcamImpl.h"
 #include "../../../error/webcam_exception.h"
-#include "../../../info/device_info.h"
-#include "../../../utils/buffer.h"
+#include "info/DeviceInfo.h"
+#include "utils/Buffer.h"
 
 namespace webcam
 {
 
-class lin_webcam_impl: public webcam_impl
+class lin_webcam_impl: public WebcamImpl
 {
 public:
-	lin_webcam_impl(unsigned char camera_number_, device & webcam_);
+	lin_webcam_impl(unsigned char camera_number_, Device & webcam_);
 	virtual ~lin_webcam_impl();
 
 	virtual void open();
 	virtual void close();
-	virtual image * read();
+	virtual Image * read();
 	virtual void release_safe();
 protected:
 	void do_open();
@@ -37,12 +37,12 @@ protected:
 	void do_close();
 
 	void wait_for_image();
-	image * create_image();
+	Image * create_image();
 
 	void enum_formats(std::vector<int> & pix_fmt_);
 	int xioctl(int request_, void * argp_);
 	int						_fd;
-	std::vector<buffer*>	_buffers;
+	std::vector<Buffer*>	_buffers;
 };
 
 }

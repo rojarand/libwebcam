@@ -5,5 +5,5 @@
 #include "device/os/lin/lin_enumerator.h"
 #endif
 
-#include "device/device.h"
+#include "device/Device.h"
 #include "error/enumerator_exception.h"
