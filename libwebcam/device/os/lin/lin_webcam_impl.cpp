@@ -417,7 +417,7 @@ namespace webcam
 		control_s.id = control;
 		control_s.value = value;
 		if ((err = ioctl (fd, VIDIOC_S_CTRL, &control_s)) < 0) {
-			fprintf (stderr, "ioctl set control error %d\n",err);
+			fprintf (stderr, "ioctl set control error %d on control=%d\n",err,control);
 			return -1;
 		} else {
 			return 0;
@@ -446,29 +446,29 @@ namespace webcam
 
 	int lin_webcam_impl::set_focus( bool automatic , int value ) {
 
-//		if( automatic ) {
-//			return set_control(_fd, V4L2_CID_FOCUS_AUTO, 1);
-//		} else {
-//			int ret = set_control(_fd, V4L2_CID_FOCUS_AUTO, 0);
-//			if( ret != 0 )
-//				return ret;
-//			return set_control(_fd, _device.get_device_info().get_focus_info(), V4L2_CID_FOCUS_ABSOLUTE, value);
-//		}
-		const ControlInfo& info = _device.get_device_info().get_focus_info();
-
 		if( automatic ) {
-			if( info.automatic )
-				return set_control(_fd, V4L2_CID_FOCUS_AUTO, 1);
-			else
-				return set_control(_fd, info, V4L2_CID_FOCUS_ABSOLUTE, info.default_value);
+			return set_control(_fd, V4L2_CID_FOCUS_AUTO, 1);
 		} else {
-//			if( info.automatic ) {
-				int ret = set_control(_fd, V4L2_CID_FOCUS_AUTO, 0);
-				if( ret != 0 )
-					return ret;
-//			}
-			return set_control(_fd, info, V4L2_CID_FOCUS_ABSOLUTE, value);
+			int ret = set_control(_fd, V4L2_CID_FOCUS_AUTO, 0);
+			if( ret != 0 )
+				return ret;
+			return set_control(_fd, _device.get_device_info().get_focus_info(), V4L2_CID_FOCUS_ABSOLUTE, value);
 		}
+//		const ControlInfo& info = _device.get_device_info().get_focus_info();
+
+//		if( automatic ) {
+//			if( info.automatic )
+//				return set_control(_fd, V4L2_CID_FOCUS_AUTO, 1);
+//			else
+//				return set_control(_fd, info, V4L2_CID_FOCUS_ABSOLUTE, info.default_value);
+//		} else {
+//			if( info.automatic ) {
+//				int ret = set_control(_fd, V4L2_CID_FOCUS_AUTO, 0);
+//				if( ret != 0 )
+//					return ret;
+//			}
+//			return set_control(_fd, info, V4L2_CID_FOCUS_ABSOLUTE, value);
+//		}
 	}
 
 	int lin_webcam_impl::set_exposure( bool automatic , int value ) {
@@ -481,34 +481,41 @@ namespace webcam
 //			return set_control(_fd, _device.get_device_info().get_exposure_info(), V4L2_CID_EXPOSURE_ABSOLUTE, value);
 //		}
 
-		const ControlInfo& info = _device.get_device_info().get_exposure_info();
+		const ControlInfo &info = _device.get_device_info().get_exposure_info();
 
-		if( automatic ) {
-			if( info.automatic )
-				return set_control(_fd, V4L2_CID_EXPOSURE_AUTO, V4L2_EXPOSURE_AUTO);
-			else
-				return set_control(_fd, info, V4L2_CID_EXPOSURE_ABSOLUTE, info.default_value);
-		} else {
-			if( info.automatic ) {
-				int ret = set_control(_fd, V4L2_CID_EXPOSURE_AUTO, V4L2_EXPOSURE_MANUAL);
-				if( ret != 0 )
-					return ret;
+		if (automatic) {
+			// BRIO doesn't like V4L2_EXPOSURE_MANUAL but likes V4L2_EXPOSURE_SHUTTER_PRIORITY???
+			if (info.automatic)
+				return set_control(_fd, V4L2_CID_EXPOSURE_AUTO, V4L2_EXPOSURE_SHUTTER_PRIORITY);
+			else {
+				value = info.default_value;
 			}
-			return set_control(_fd, info, V4L2_CID_EXPOSURE_ABSOLUTE, value);
 		}
+
+	    set_control(_fd, V4L2_CID_EXPOSURE_AUTO, V4L2_EXPOSURE_MANUAL);
+		return set_control(_fd, info, V4L2_CID_EXPOSURE_ABSOLUTE, value);
 	}
 
 	int lin_webcam_impl::set_gain( bool automatic , int value ) {
 		const ControlInfo& info = _device.get_device_info().get_gain_info();
 
+//		if( automatic ) {
+//			return set_control(_fd, V4L2_CID_AUTOGAIN, 1);
+//		} else {
+//			int ret = set_control(_fd, V4L2_CID_AUTOGAIN, 0);
+//			if( ret != 0 )
+//				return ret;
+//			return set_control(_fd, info, V4L2_CID_GAIN, value);
+//		}
+
 		if( automatic ) {
 			if( info.automatic )
-				return set_control(_fd, V4L2_CID_AUTOGAIN, true);
+				return set_control(_fd, V4L2_CID_AUTOGAIN, 1);
 			else
 				return set_control(_fd, info, V4L2_CID_GAIN, info.default_value);
 		} else {
 			if( info.automatic ) {
-				int ret = set_control(_fd, V4L2_CID_AUTOGAIN, false);
+				int ret = set_control(_fd, V4L2_CID_AUTOGAIN, 0);
 				if( ret != 0 )
 					return ret;
 			}
