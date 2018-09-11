@@ -18,6 +18,10 @@ namespace webcam
 		virtual Image * read() = 0;
 		unsigned char get_webcam_number()const;
 		virtual void release_safe() = 0;
+
+		virtual int set_focus( bool automatic , int value ) = 0;
+		virtual int set_exposure( bool automatic , int value ) = 0;
+		virtual int set_gain(  bool automatic , int value ) = 0;
 	protected:
 		unsigned char _camera_number;
 		Device & _device;

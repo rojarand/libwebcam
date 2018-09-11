@@ -29,6 +29,11 @@ public:
 	virtual void close();
 	virtual Image * read();
 	virtual void release_safe();
+
+	virtual int set_focus( bool automatic , int value );
+	virtual int set_exposure( bool automatic , int value );
+	virtual int set_gain( bool automatic , int value );
+
 protected:
 	void do_open();
 	void set_video_settings();
@@ -36,9 +41,13 @@ protected:
 	void unmap_memory();
 	void do_close();
 
+	void enumerate_controls();
+
 	void wait_for_image();
 	Image * create_image();
 
+	int get_video_controls( int fd , __u32 control , ControlInfo& info );
+    bool isv4l2Control( int fd, int control, struct v4l2_queryctrl *queryctrl);
 	void enum_formats(std::vector<int> & pix_fmt_);
 	int xioctl(int request_, void * argp_);
 	int						_fd;

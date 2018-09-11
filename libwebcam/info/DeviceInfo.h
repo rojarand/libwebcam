@@ -6,7 +6,7 @@
 
 namespace webcam
 {
-	class DeviceInfo
+    class DeviceInfo
 	{
 	public:
 		DeviceInfo();
@@ -19,6 +19,7 @@ namespace webcam
 		void set_model_info(ModelInfo & model_info_);
 		bool supports_format(const Format & format_)const;
 		Resolution get_highest_resolution(const Format & format_)const;
+
 	private:
 		ModelInfo _model_info;
 		VideoInfoEnumeration _video_info_enumeration;

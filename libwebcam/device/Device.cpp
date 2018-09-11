@@ -18,6 +18,10 @@
 
 namespace webcam
 {
+    ControlInfo::ControlInfo() {
+        this->available = false;
+        this->min = this->max = this->step = this->default_value = 0;
+    }
 
 	Device::Device(unsigned char number_, const VideoSettings & video_settings_)
 		: _state( closed::instance() )
@@ -88,4 +92,27 @@ namespace webcam
 		_video_settings = video_settings_;
 	}
 
+    ControlInfo& Device::get_gain() {
+        return _control_gain;
+    }
+
+    ControlInfo& Device::get_exposure() {
+        return _control_exposure;
+    }
+
+    ControlInfo& Device::get_focus() {
+        return _control_focus;
+    }
+
+	void Device::set_focus( bool automatic , int value ) {
+		_impl->set_focus(automatic, value);
+    }
+
+    void Device::set_exposure( bool automatic , int value ) {
+		_impl->set_exposure(automatic, value);
+    }
+
+	void Device::set_gain(  bool automatic , int value ) {
+		_impl->set_gain(automatic, value);
+    }
 }

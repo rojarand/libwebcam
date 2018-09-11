@@ -45,6 +45,33 @@ namespace webcam
 		short _height;
 	};
 
+	template <class T>
+	class Parameter {
+	public:
+		Parameter() {
+			manual = false;
+			value = 0;
+		}
+
+		bool is_manual() {
+			return manual;
+		}
+		T get_value() {
+			return value;
+		}
+
+		void set_manual( bool v ) {
+			this->manual = v;
+		}
+		void set_value( T value ) {
+			this->value = value;
+		}
+
+	protected:
+		bool manual;
+		T value;
+	};
+
 	class VideoSettings
 	{
 	public:
@@ -60,8 +87,10 @@ namespace webcam
 		unsigned char get_quality()const;
 		const Resolution & get_resolution()const;
 		unsigned int get_width()const;
+		const Parameter<int>& get_focus() const;
+        const Parameter<int>& get_exposure() const;
 
-		void set_format(const Format & format_);
+        void set_format(const Format & format_);
 		void set_fps(unsigned int fps_);
 		void set_quality(unsigned char quality_);
 		void set_resolution(const Resolution & resolution_);
@@ -72,6 +101,8 @@ namespace webcam
 		unsigned int _fps;
 		unsigned char _quality;
 		Resolution _resolution;
-	};
+        Parameter<int> focus;
+        Parameter<int> exposure;
+    };
 
 }
