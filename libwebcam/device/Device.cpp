@@ -18,14 +18,11 @@
 
 namespace webcam
 {
-    ControlInfo::ControlInfo() {
-        this->available = false;
-        this->min = this->max = this->step = this->default_value = 0;
-    }
-
-	Device::Device(unsigned char number_, const VideoSettings & video_settings_)
+	Device::Device(unsigned char number_, const VideoSettings & video_settings_,
+                   const DeviceInfo &device_info )
 		: _state( closed::instance() )
 		, _video_settings(video_settings_)
+		, _device_info(device_info)
 	{
 		_impl = new WEBCAM_IMPL(number_, *this);
 	}
@@ -77,6 +74,11 @@ namespace webcam
 		_state->set_video_settings(*this, video_settings_);
 	}
 
+    const DeviceInfo& Device::get_device_info() const
+    {
+	    return _device_info;
+    }
+
 	bool Device::is_resolution_adjustable()const
 	{
 		return true;
@@ -91,18 +93,6 @@ namespace webcam
 	{
 		_video_settings = video_settings_;
 	}
-
-    ControlInfo& Device::get_gain() {
-        return _control_gain;
-    }
-
-    ControlInfo& Device::get_exposure() {
-        return _control_exposure;
-    }
-
-    ControlInfo& Device::get_focus() {
-        return _control_focus;
-    }
 
 	void Device::set_focus( bool automatic , int value ) {
 		_impl->set_focus(automatic, value);

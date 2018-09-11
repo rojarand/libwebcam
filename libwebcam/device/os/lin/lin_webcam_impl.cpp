@@ -125,42 +125,7 @@ namespace webcam
 				}
 			}
 		}
-
-        get_video_controls(_fd,V4L2_CID_FOCUS_ABSOLUTE,_device.get_focus());
-		get_video_controls(_fd,V4L2_CID_EXPOSURE_ABSOLUTE,_device.get_exposure());
-		get_video_controls(_fd,V4L2_CID_GAIN,_device.get_gain());
 	}
-
-    int lin_webcam_impl::get_video_controls( int fd , __u32 control , ControlInfo& info )
-    {
-        struct v4l2_queryctrl queryctrl;
-        memset(&queryctrl, 0, sizeof(queryctrl));
-        int err = 0;
-
-        info.available = false;
-
-        queryctrl.id = control;
-        if ((err = ioctl (fd, VIDIOC_QUERYCTRL, &queryctrl)) < 0) {
-            fprintf (stderr, "ioctl querycontrol error %d \n", errno);
-        } else if (queryctrl.flags & V4L2_CTRL_FLAG_DISABLED) {
-            fprintf (stderr, "control %s disabled \n", (char *) queryctrl.name);
-        } else if (queryctrl.flags & V4L2_CTRL_TYPE_BOOLEAN) {
-//            printf("bool\n");
-            info.available = true;
-            return 0;
-        } else if (queryctrl.type & V4L2_CTRL_TYPE_INTEGER) {
-            info.available = true;
-            info.min = queryctrl.minimum;
-            info.max = queryctrl.maximum;
-            info.step = queryctrl.step;
-            info.default_value = queryctrl.default_value;
-//			printf("int %d %d %d %d\n",info.min,info.max,info.default_value,info.step);
-			return 0;
-        } else {
-            fprintf (stderr, "control %s unsupported  \n", (char *) queryctrl.name);
-        }
-        return err;
-    }
 
 	static void enumerate_menu( int fd , __u32 id, struct v4l2_queryctrl &queryctrl )
 	{
@@ -487,7 +452,7 @@ namespace webcam
 			int ret = set_control(_fd, V4L2_CID_FOCUS_AUTO, 0);
 			if( ret != 0 )
 				return ret;
-			return set_control(_fd, _device.get_focus(), V4L2_CID_FOCUS_ABSOLUTE, value);
+			return set_control(_fd, _device.get_device_info().get_focus_info(), V4L2_CID_FOCUS_ABSOLUTE, value);
 		}
 	}
 
@@ -498,7 +463,7 @@ namespace webcam
 			int ret = set_control(_fd, V4L2_CID_EXPOSURE_AUTO, V4L2_EXPOSURE_MANUAL);
 			if( ret != 0 )
 				return ret;
-			return set_control(_fd, _device.get_exposure(), V4L2_CID_EXPOSURE_ABSOLUTE, value);
+			return set_control(_fd, _device.get_device_info().get_exposure_info(), V4L2_CID_EXPOSURE_ABSOLUTE, value);
 		}
 	}
 
@@ -510,7 +475,7 @@ namespace webcam
 			int ret = set_control(_fd, V4L2_CID_AUTOGAIN, 0);
 			if( ret != 0 )
 				return ret;
-			return set_control(_fd, _device.get_gain(), V4L2_CID_GAIN, value);
+			return set_control(_fd, _device.get_device_info().get_gain_info(), V4L2_CID_GAIN, value);
 		}
 	}
 }

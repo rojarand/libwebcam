@@ -16,14 +16,6 @@
 
 namespace webcam
 {
-	struct ControlInfo
-	{
-		ControlInfo();
-
-		bool available;
-		int min,max,default_value,step;
-	};
-
 	class state;
 	class WebcamImpl;
 
@@ -32,7 +24,8 @@ namespace webcam
 		friend class state;
 		friend class WebcamImpl;
 
-		Device(unsigned char number_, const VideoSettings & video_settings_);
+		Device(unsigned char number_, const VideoSettings & video_settings_,
+		        const DeviceInfo &device_info );
 		virtual ~Device();
 		
 		virtual void open();
@@ -41,14 +34,12 @@ namespace webcam
 
 		unsigned char get_number()const;
 		const VideoSettings & get_video_settings()const;
+		const DeviceInfo& get_device_info() const;
+
 		void set_video_settings(const VideoSettings & video_settings_);
 		bool is_resolution_adjustable()const;
 		bool is_quality_adjustable()const;
 		bool is_open()const;
-
-		ControlInfo& get_gain();
-		ControlInfo& get_exposure();
-		ControlInfo& get_focus();
 
 		void set_focus( bool automatic , int value );
         void set_exposure( bool automatic , int value );
@@ -60,10 +51,7 @@ namespace webcam
 		state * _state;
 		VideoSettings _video_settings;
 		WebcamImpl * _impl;
-
-		ControlInfo _control_gain;
-		ControlInfo _control_exposure;
-		ControlInfo _control_focus;
+		const DeviceInfo& _device_info;
 	};
 
 }

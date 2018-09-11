@@ -6,7 +6,15 @@
 
 namespace webcam
 {
-    class DeviceInfo
+	struct ControlInfo
+	{
+		ControlInfo();
+
+		bool available;
+		int min,max,default_value,step;
+	};
+
+	class DeviceInfo
 	{
 	public:
 		DeviceInfo();
@@ -20,8 +28,20 @@ namespace webcam
 		bool supports_format(const Format & format_)const;
 		Resolution get_highest_resolution(const Format & format_)const;
 
+		const ControlInfo& get_gain_info() const;
+		const ControlInfo& get_exposure_info() const;
+		const ControlInfo& get_focus_info() const;
+
+		ControlInfo& get_gain_info();
+		ControlInfo& get_exposure_info();
+		ControlInfo& get_focus_info();
+
 	private:
 		ModelInfo _model_info;
 		VideoInfoEnumeration _video_info_enumeration;
+
+		ControlInfo _control_gain;
+		ControlInfo _control_exposure;
+		ControlInfo _control_focus;
 	};
 }

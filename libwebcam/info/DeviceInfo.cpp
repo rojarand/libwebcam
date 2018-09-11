@@ -2,6 +2,11 @@
 
 namespace webcam
 {
+	ControlInfo::ControlInfo() {
+		this->available = false;
+		this->min = this->max = this->step = this->default_value = 0;
+	}
+
 	DeviceInfo::DeviceInfo()
 	{
 	}
@@ -59,5 +64,29 @@ namespace webcam
 			}
 		}
 		return current_resolution;
+	}
+
+	const ControlInfo& DeviceInfo::get_gain_info() const {
+		return _control_gain;
+	}
+
+	const ControlInfo& DeviceInfo::get_exposure_info() const {
+		return _control_exposure;
+	}
+
+	const ControlInfo& DeviceInfo::get_focus_info() const {
+		return _control_focus;
+	}
+
+	ControlInfo& DeviceInfo::get_gain_info() {
+		return _control_gain;
+	}
+
+	ControlInfo& DeviceInfo::get_exposure_info() {
+		return _control_exposure;
+	}
+
+	ControlInfo& DeviceInfo::get_focus_info() {
+		return _control_focus;
 	}
 }
