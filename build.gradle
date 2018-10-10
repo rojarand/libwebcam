@@ -1,0 +1,23 @@
+allprojects {
+    apply plugin: 'idea'
+    apply plugin: 'eclipse'
+
+    group = 'libwebcam'
+    version = '1.0-SNAPSHOT'
+}
+
+subprojects {
+    apply plugin: 'maven'
+
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+                repository(url: mavenLocal().getUrl())
+            }
+        }
+    }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.3'
+}
