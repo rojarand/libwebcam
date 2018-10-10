@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.2.2)
 
+set(CMAKE_CXX_STANDARD 11)
+
 find_package(JNI)
 
 if (JNI_FOUND)
@@ -10,7 +12,8 @@ else()
 endif()
 
 include_directories(
-        ${CMAKE_SOURCE_DIR}/boofcpp/src/boofcv
+        ${CMAKE_SOURCE_DIR}
+        ${CMAKE_SOURCE_DIR}/libwebcam
         src/main/cpp
         ${JNI_INCLUDE_DIRS})
 

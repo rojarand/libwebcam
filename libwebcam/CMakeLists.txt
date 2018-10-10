@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD 11)
 # Set the compiled file to the TARGET variable.
 set(TARGET "libwebcam")
 set(LIB_NAME "webcam")
-set(LIB_MODE "STATIC")# "SHARED", "STATIC"
+set(LIB_MODE "SHARED")# "SHARED", "STATIC"
 
 # Collect sources into the variable
 file (GLOB_RECURSE DEVICE_SOURCES
