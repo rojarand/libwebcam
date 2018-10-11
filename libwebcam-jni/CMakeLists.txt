@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.2.2)
 set(CMAKE_CXX_STANDARD 11)
 
 find_package(JNI)
+find_package(JPEG REQUIRED)
 
 if (JNI_FOUND)
     message (STATUS "JNI_INCLUDE_DIRS=${JNI_INCLUDE_DIRS}")
@@ -24,4 +25,4 @@ file(GLOB JNI_SRC "src/main/cpp/*.cpp")
 
 add_library(webcamjni SHARED ${JNI_SRC})
 
-target_link_libraries(webcamjni webcam)
+target_link_libraries(webcamjni webcam jpeg)

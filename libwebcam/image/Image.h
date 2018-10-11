@@ -24,7 +24,7 @@ namespace webcam
 
 		const VideoSettings & get_video_settings()const;
 		const unsigned char * get_data()const;
-		unsigned int get_data_lenght()const;
+		unsigned int get_data_length()const;
 		bool is_empty()const;
 		void empty();
 		BufferData detach();

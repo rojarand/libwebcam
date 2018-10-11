@@ -4,6 +4,10 @@
 #include <libwebcam/info/VideoInfo.h>
 #include <stdexcept>
 #include <iostream>
+#include <jpeglib.h>
+#include <stdio.h>
+#include <setjmp.h>
+#include <string.h>
 
 using namespace std;
 
@@ -36,6 +40,38 @@ jmethodID safe_GetMethodID( JNIEnv *env, jclass& objClass, const char* name , co
         throw "failed GetMethodID";
     }
     return fid;
+}
+
+struct my_jpeg_error {
+    struct jpeg_error_mgr   base;
+    jmp_buf                 env;
+};
+
+static void my_output_message(struct jpeg_common_struct *com)
+{
+    struct my_jpeg_error *err = (struct my_jpeg_error *)com->err;
+    char buf[JMSG_LENGTH_MAX];
+
+    err->base.format_message(com, buf);
+    fprintf(stderr, "JPEG error: %s", buf);
+}
+
+static void my_error_exit(struct jpeg_common_struct *com)
+{
+    struct my_jpeg_error *err = (struct my_jpeg_error *)com->err;
+
+    my_output_message(com);
+    longjmp(err->env, 0);
+}
+
+static struct jpeg_error_mgr *my_error_mgr(struct my_jpeg_error *err)
+{
+    jpeg_std_error(&err->base);
+
+    err->base.error_exit = my_error_exit;
+    err->base.output_message = my_output_message;
+
+    return &err->base;
 }
 
 //JNIEXPORT void JNICALL Java_libwebcam_Webcam_lookupDevices(JNIEnv *env, jclass obj, jobject devices)
@@ -199,14 +235,58 @@ JNIEXPORT jboolean JNICALL Java_libwebcam_WebcamDriver_capture
         error_message = "camera not open";
         return false;
     }
+
+    bool success = true;
+
+    char* img_data = (char *)env->GetPrimitiveArrayCritical(jdata, 0);
+
     webcam::Image *image = device->read();
     const unsigned char * data = image->get_data();
     unsigned int length = image->get_data_length();
-    cout << "  image data length " << length << endl;
 
-    delete image;
 
-    return true;
+    struct jpeg_decompress_struct dinfo;
+    struct my_jpeg_error err;
+
+    memset(&dinfo, 0, sizeof(dinfo));
+    dinfo.err = my_error_mgr(&err);
+
+    if (setjmp(err.env)) {
+        success = false;
+        goto fail;
+    }
+
+    jpeg_create_decompress(&dinfo);
+
+    (void) jpeg_mem_src(&dinfo, data, length);
+    (void) jpeg_read_header(&dinfo, TRUE);
+    (void) jpeg_start_decompress(&dinfo);
+
+    if( dinfo.output_width != video_resolution.get_width() ) {
+        error_message = "Unexpected width in jpeg.";
+        goto fail;
+    }
+    if( dinfo.output_height != video_resolution.get_height() ) {
+        error_message = "Unexpected width in jpeg.";
+        goto fail;
+    }
+    if( dinfo.output_components != 3 ) {
+        error_message = "Unexpected number of components in jpeg.";
+        goto fail;
+    }
+
+    for (int y = 0; y < dinfo.output_height; y++) {
+        JSAMPROW row_pointer = (JSAMPROW)img_data + y * dinfo.output_width*dinfo.output_components;
+        jpeg_read_scanlines(&dinfo, &row_pointer, 1);
+    }
+
+    jpeg_finish_decompress(&dinfo);
+
+    fail:
+        env->ReleasePrimitiveArrayCritical((jarray)jdata, img_data, JNI_ABORT);
+        delete image;
+        jpeg_destroy_decompress(&dinfo);
+        return success;
   }
 
 JNIEXPORT jint JNICALL Java_libwebcam_WebcamDriver_imageWidth

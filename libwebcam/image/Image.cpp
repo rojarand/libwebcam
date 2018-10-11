@@ -55,7 +55,7 @@ namespace webcam
 		return _buffer.get_data();
 	}
 
-	unsigned int Image::get_data_lenght()const
+	unsigned int Image::get_data_length()const
 	{
 		return _buffer.get_length();
 	}
