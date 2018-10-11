@@ -74,35 +74,6 @@ static struct jpeg_error_mgr *my_error_mgr(struct my_jpeg_error *err)
     return &err->base;
 }
 
-//JNIEXPORT void JNICALL Java_libwebcam_Webcam_lookupDevices(JNIEnv *env, jclass obj, jobject devices)
-//{
-//    try
-//    {
-//        jclass cls_dinfo = safe_FindClass( env,  "libwebcam/DeviceInfo");
-//        jmethodID constructor_vinfo = safe_GetMethodID(env, cls_dinfo, "<init>", "()V");
-//
-//        jclass cls_list = safe_FindClass( env,  "java/util/List");
-//        jmethodID list_add = safe_GetMethodID(env, cls_list, "add", "(Ljava/lang/Object;)Z");
-//
-//        const webcam::DeviceInfoEnumeration & enumeration = webcam::enumerator::enumerate();
-//
-//        const size_t count = enumeration.count();
-//
-//        for (size_t device_index = 0; device_index < count; device_index++) {
-//            const webcam::DeviceInfo & device_info = enumeration.get(device_index);
-//
-//            jobject jinfo = env->NewObject(cls_dinfo,constructor_vinfo);
-//
-//            env->CallObjectMethod(devices,list_add,jinfo);
-//        }
-//
-//    }
-//    catch(const webcam::enumerator_exception & exc_)
-//    {
-//        std::cout<<exc_.what()<<std::endl;
-//    }
-//}
-
 bool select_resolution( const webcam::DeviceInfo & device_info , int width , int height ,
                         webcam::Resolution& selected , std::string &format )
 {
@@ -135,16 +106,16 @@ bool select_resolution( const webcam::DeviceInfo & device_info , int width , int
 JNIEXPORT jboolean JNICALL Java_libwebcam_WebcamDriver_open
   (JNIEnv *env, jobject obj, jint width, jint height) {
 
-  cout << "ENTER Java_libwebcam_WebcamDriver_open()" << endl;
+//  cout << "ENTER Java_libwebcam_WebcamDriver_open()" << endl;
     if( !camera_open ) {
-        cout << " camera not open already" << endl;
+//        cout << " camera not open already" << endl;
 
       // Pick a webcam to open. The first one is a great choice!
       try {
           const webcam::DeviceInfoEnumeration & enumeration = webcam::enumerator::enumerate();
           const size_t count = enumeration.count();
 
-        cout << " searching devices " << count << endl;
+//        cout << " searching devices " << count << endl;
 
           if( count > 1 ) {
             std::cout << "Multiple cameras to choose from. First first." << endl;
@@ -160,7 +131,7 @@ JNIEXPORT jboolean JNICALL Java_libwebcam_WebcamDriver_open
           return false;
       }
 
-        cout << " selecting resolution" << endl;
+//        cout << " selecting resolution" << endl;
       if( !select_resolution( device_info,width,height,video_resolution,video_format) ) {
         error_message = "failed to select resolution";
         return false;
@@ -188,7 +159,7 @@ JNIEXPORT jboolean JNICALL Java_libwebcam_WebcamDriver_open
         device = NULL;
     }
 
-    cout << " configuring settings" << endl;
+//    cout << " configuring settings" << endl;
     webcam::Format *format = webcam::create_format(video_format);
     webcam::VideoSettings video_settings;
     video_settings.set_format(*format);
@@ -196,7 +167,7 @@ JNIEXPORT jboolean JNICALL Java_libwebcam_WebcamDriver_open
     video_settings.set_resolution(video_resolution);
 
     delete format;
-    cout << " opening" << endl;
+//    cout << " opening" << endl;
 
     try {
         device = new webcam::Device(selected_device,video_settings,device_info);
