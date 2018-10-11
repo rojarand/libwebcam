@@ -95,4 +95,24 @@ namespace webcam
 		}
 		return new Format_UNKN(native_format_);
 	}
+
+	Format* create_format( std::string name ) {
+		const Format_MJPEG FORMAT_MJPEG;
+		const Format_JPEG FORMAT_JPEG;
+		const Format_I420 FORMAT_I420;
+		const Format_YUYV FORMAT_YUYV;
+		const Format_YUY2 FORMAT_YUY2;
+		const Format_BMP24 FORMAT_BMP24;
+		const Format_RGB24 FORMAT_RGB24;
+		const Format_BGR8 FORMAT_BGR8;
+
+		if( name == "BGR8" )
+			return FORMAT_BGR8.clone();
+		else if( name == "RGB24")
+			return FORMAT_RGB24.clone();
+		else if( name == "MJPG" )
+			return FORMAT_MJPEG.clone();
+		else
+			new Format_UNKN(0);
+	}
 }

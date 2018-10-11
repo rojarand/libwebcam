@@ -109,4 +109,5 @@ namespace webcam
 
     Format * create_format(native_format native_format_);
 
+    Format * create_format( std::string name );
 }
