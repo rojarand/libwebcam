@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * @author Peter Abeles
  */
-public class TestWebcam {
+public class TestWebcamDriver {
 
     @Test
     public void openCamera() {
