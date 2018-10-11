@@ -64,9 +64,9 @@ public class WebcamDriver {
     public native int readGain( ValueType type );
     public native int readFocus( ValueType type );
 
-    public native void setExposure( boolean manual , int value );
-    public native void setGain( boolean manual , int value );
-    public native void setFocus( boolean manual , int value );
+    public native void setExposure( boolean automatic , int value );
+    public native void setGain( boolean automatic , int value );
+    public native void setFocus( boolean automatic , int value );
 
     public native String errorMessage();
 

@@ -305,30 +305,129 @@ JNIEXPORT jint JNICALL Java_libwebcam_WebcamDriver_imageBands
   }
 
 JNIEXPORT jint JNICALL Java_libwebcam_WebcamDriver_readExposure
-  (JNIEnv *env, jobject obj, jobject) {
-    return 0;
+  (JNIEnv *env, jobject obj, jobject type_enum ) {
+    if( !camera_open ) {
+      error_message = "camera not open";
+      return -1;
+    }
+
+    jclass cls_enum = safe_FindClass( env,  "libwebcam/WebcamDriver$ValueType");
+    jmethodID jordinal = safe_GetMethodID(env,cls_enum, "ordinal", "()I");
+    jint value = env->CallIntMethod(type_enum, jordinal);
+
+    switch( value ) {
+        case 0: // min
+            return device_info.get_exposure_info().min;
+        case 1: // max
+            return device_info.get_exposure_info().max;
+        case 2: // DEFAULT
+            return device_info.get_exposure_info().default_value;
+        case 3: // STEP
+            return device_info.get_exposure_info().step;
+        case 4: // CURRENT
+            return 0;
+        case 5: // MANUAL
+            return device_info.get_exposure_info().manual ? 1 : 0;
+        case 6: // AUTOMATIC
+            return device_info.get_exposure_info().automatic ? 1 : 0;
+    }
+
+    error_message = "unknown enum";
+
+    return -1;
   }
 
 JNIEXPORT jint JNICALL Java_libwebcam_WebcamDriver_readGain
-  (JNIEnv *env, jobject obj, jobject) {
-    return 0;
+  (JNIEnv *env, jobject obj, jobject type_enum) {
+    if( !camera_open ) {
+      error_message = "camera not open";
+      return -1;
+    }
+
+    jclass cls_enum = safe_FindClass( env,  "libwebcam/WebcamDriver$ValueType");
+    jmethodID jordinal = safe_GetMethodID(env,cls_enum, "ordinal", "()I");
+    jint value = env->CallIntMethod(type_enum, jordinal);
+
+    switch( value ) {
+        case 0: // min
+            return device_info.get_gain_info().min;
+        case 1: // max
+            return device_info.get_gain_info().max;
+        case 2: // DEFAULT
+            return device_info.get_gain_info().default_value;
+        case 3: // STEP
+            return device_info.get_gain_info().step;
+        case 4: // CURRENT
+            return 0;
+        case 5: // MANUAL
+            return device_info.get_gain_info().manual ? 1 : 0;
+        case 6: // AUTOMATIC
+            return device_info.get_gain_info().automatic ? 1 : 0;
+    }
+
+    error_message = "unknown enum";
+
+    return -1;
   }
 
 JNIEXPORT jint JNICALL Java_libwebcam_WebcamDriver_readFocus
-  (JNIEnv *env, jobject obj, jobject) {
-    return 0;
+  (JNIEnv *env, jobject obj, jobject type_enum) {
+    if( !camera_open ) {
+      error_message = "camera not open";
+      return -1;
+    }
+
+    jclass cls_enum = safe_FindClass( env,  "libwebcam/WebcamDriver$ValueType");
+    jmethodID jordinal = safe_GetMethodID(env,cls_enum, "ordinal", "()I");
+    jint value = env->CallIntMethod(type_enum, jordinal);
+
+    switch( value ) {
+        case 0: // min
+            return device_info.get_focus_info().min;
+        case 1: // max
+            return device_info.get_focus_info().max;
+        case 2: // DEFAULT
+            return device_info.get_focus_info().default_value;
+        case 3: // STEP
+            return device_info.get_focus_info().step;
+        case 4: // CURRENT
+            return 0;
+        case 5: // MANUAL
+            return device_info.get_focus_info().manual ? 1 : 0;
+        case 6: // AUTOMATIC
+            return device_info.get_focus_info().automatic ? 1 : 0;
+    }
+
+    error_message = "unknown enum";
+
+    return -1;
   }
 
 JNIEXPORT void JNICALL Java_libwebcam_WebcamDriver_setExposure
-  (JNIEnv *env, jobject obj, jboolean manual, jint value) {
+  (JNIEnv *env, jobject obj, jboolean automatic, jint value) {
+    if( !camera_open ) {
+      error_message = "camera not open";
+      return;
+    }
+    device->set_exposure(automatic,value);
   }
 
 JNIEXPORT void JNICALL Java_libwebcam_WebcamDriver_setGain
-  (JNIEnv *env, jobject, jboolean manual, jint value) {
+  (JNIEnv *env, jobject, jboolean automatic, jint value) {
+    if( !camera_open ) {
+      error_message = "camera not open";
+      return;
+    }
+    device->set_gain(automatic,value);
   }
 
 JNIEXPORT void JNICALL Java_libwebcam_WebcamDriver_setFocus
-  (JNIEnv *env, jobject, jboolean manual, jint value) {
+  (JNIEnv *env, jobject, jboolean automatic, jint value) {
+    if( !camera_open ) {
+      error_message = "camera not open";
+      return;
+    }
+    device->set_focus(automatic,value);
   }
 
 JNIEXPORT jstring JNICALL Java_libwebcam_WebcamDriver_errorMessage
