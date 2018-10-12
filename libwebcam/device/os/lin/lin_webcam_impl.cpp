@@ -16,6 +16,7 @@
 #include <cstring>
 #include <sstream>
 #include <algorithm>
+#include <iostream>
 
 #include "lin_webcam_impl.h"
 
@@ -484,15 +485,24 @@ namespace webcam
 		const ControlInfo &info = _device.get_device_info().get_exposure_info();
 
 		if (automatic) {
-			// BRIO doesn't like V4L2_EXPOSURE_MANUAL but likes V4L2_EXPOSURE_SHUTTER_PRIORITY???
-			if (info.automatic)
-				return set_control(_fd, V4L2_CID_EXPOSURE_AUTO, V4L2_EXPOSURE_SHUTTER_PRIORITY);
-			else {
+			if (info.automatic) {
+				// BRIO likes V4L2_EXPOSURE_APERTURE_PRIORITY but not the others
+				int ret = set_control(_fd, V4L2_CID_EXPOSURE_AUTO, V4L2_EXPOSURE_APERTURE_PRIORITY);
+				if( ret == 0 )
+					return ret;
+				ret = set_control(_fd, V4L2_CID_EXPOSURE_AUTO, V4L2_EXPOSURE_AUTO);
+				return ret;
+			} else {
+				// camera doesn't support automatic mode, so set it to the default value
 				value = info.default_value;
 			}
 		}
 
-	    set_control(_fd, V4L2_CID_EXPOSURE_AUTO, V4L2_EXPOSURE_MANUAL);
+		int ret = set_control(_fd, V4L2_CID_EXPOSURE_AUTO, V4L2_EXPOSURE_MANUAL );
+		if( 0 != ret ) {
+			std::cout << "failed to set exposure to manual" << std::endl;
+	    	return ret;
+	    }
 		return set_control(_fd, info, V4L2_CID_EXPOSURE_ABSOLUTE, value);
 	}
 

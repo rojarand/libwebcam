@@ -7,6 +7,7 @@
 
 #include "Device.h"
 #include "state/closed.h"
+#include <iostream>
 
 #ifdef WIN32
 	#include "os/win/win_webcam_impl.h"
@@ -95,14 +96,20 @@ namespace webcam
 	}
 
 	void Device::set_focus( bool automatic , int value ) {
-		_impl->set_focus(automatic, value);
+		if( 0 !=_impl->set_focus(automatic, value) ) {
+			std::cout << "set focus failed" << std::endl;
+		}
     }
 
     void Device::set_exposure( bool automatic , int value ) {
-		_impl->set_exposure(automatic, value);
+		if( 0 != _impl->set_exposure(automatic, value) ) {
+			std::cout << "set exposure failed" << std::endl;
+		}
     }
 
 	void Device::set_gain(  bool automatic , int value ) {
-		_impl->set_gain(automatic, value);
+		if( 0 != _impl->set_gain(automatic, value) ) {
+			std::cout << "set gain failed" << std::endl;
+		}
     }
 }
