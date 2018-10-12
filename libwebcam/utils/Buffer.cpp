@@ -67,6 +67,10 @@ namespace webcam
 	{
 		return _buffer_data._data;
 	}
+	unsigned char * Buffer::get_data()
+	{
+		return _buffer_data._data;
+	}
 
 	unsigned int Buffer::get_length()const
 	{

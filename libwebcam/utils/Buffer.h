@@ -28,6 +28,7 @@ namespace webcam
 		void attach(const BufferData & buffer_data_);
 		BufferData detach();
 		const unsigned char * get_data()const;
+		unsigned char * get_data();
 		unsigned int get_length()const;
 		
 		void alloc(const unsigned char * data_, unsigned int len_);
