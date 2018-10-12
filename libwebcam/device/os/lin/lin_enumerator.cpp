@@ -93,13 +93,25 @@ DeviceInfoEnumeration enumerator::enumerate()
 			VideoInfoEnumeration video_enumeration = get_video_info_enumeration(fd);
 			device_info.set_video_info_enumeration(video_enumeration);
 
+			// query the device to see which controls it supports
+
 //			get_automatic_controls(fd, V4L2_CID_FOCUS_AUTO, device_info.get_focus_info());
 			device_info.get_focus_info().automatic = true;
-			get_manual_controls(fd, V4L2_CID_FOCUS_ABSOLUTE, device_info.get_focus_info());
-			get_automatic_controls(fd, V4L2_CID_EXPOSURE_AUTO, device_info.get_exposure_info());
-			get_manual_controls(fd, V4L2_CID_EXPOSURE_ABSOLUTE, device_info.get_exposure_info());
-			get_automatic_controls(fd, V4L2_CID_AUTOGAIN, device_info.get_gain_info());
-			get_manual_controls(fd, V4L2_CID_GAIN, device_info.get_gain_info());
+			if( 0 != get_manual_controls(fd, V4L2_CID_FOCUS_ABSOLUTE, device_info.get_focus_info()) ) {
+				std::cout << "get_manual_controls focus failed" << std::endl;
+			}
+			if( 0 != get_automatic_controls(fd, V4L2_CID_EXPOSURE_AUTO, device_info.get_exposure_info())) {
+				std::cout << "get_automatic_controls V4L2_CID_EXPOSURE_AUTO failed" << std::endl;
+			}
+			if( 0 != get_manual_controls(fd, V4L2_CID_EXPOSURE_ABSOLUTE, device_info.get_exposure_info())) {
+				std::cout << "get_manual_controls V4L2_CID_EXPOSURE_ABSOLUTE failed" << std::endl;
+			}
+			if( 0 != get_automatic_controls(fd, V4L2_CID_AUTOGAIN, device_info.get_gain_info()) ) {
+				std::cout << "get_automatic_controls V4L2_CID_AUTOGAIN failed" << std::endl;
+			}
+			if( 0 != get_manual_controls(fd, V4L2_CID_GAIN, device_info.get_gain_info())) {
+				std::cout << "get_manual_controls V4L2_CID_GAIN failed" << std::endl;
+			}
 
 			device_enumeration.put(device_info);
 			close(fd);
@@ -185,7 +197,7 @@ int enumerator::get_automatic_controls(int fd, __u32 control, ControlInfo &info)
 
 	queryctrl.id = control;
 	if ((err = ioctl (fd, VIDIOC_QUERYCTRL, &queryctrl)) < 0) {
-		fprintf (stderr, "ioctl querycontrol error %d \n", errno);
+		fprintf (stderr, "ioctl querycontrol ret %d error %d %s \n", err,errno,strerror(errno));
 	} else if (queryctrl.flags & V4L2_CTRL_FLAG_DISABLED) {
 		fprintf (stderr, "control %s disabled \n", (char *) queryctrl.name);
 	} else if (queryctrl.flags & V4L2_CTRL_TYPE_BOOLEAN) {
@@ -193,7 +205,7 @@ int enumerator::get_automatic_controls(int fd, __u32 control, ControlInfo &info)
 		return 0;
 	} else if (queryctrl.type & V4L2_CTRL_TYPE_INTEGER) {
         info.automatic = true;
-		return -1;
+		return 0;
 	} else {
 		fprintf (stderr, "control %s unsupported  \n", (char *) queryctrl.name);
 	}
