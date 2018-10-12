@@ -212,9 +212,8 @@ JNIEXPORT jboolean JNICALL Java_libwebcam_WebcamDriver_capture
     char* img_data = (char *)env->GetPrimitiveArrayCritical(jdata, 0);
 
     webcam::Image *image = device->read();
-    const unsigned char * data = image->get_data();
+    unsigned char * data = image->get_data();
     unsigned int length = image->get_data_length();
-
 
     struct jpeg_decompress_struct dinfo;
     struct my_jpeg_error err;
