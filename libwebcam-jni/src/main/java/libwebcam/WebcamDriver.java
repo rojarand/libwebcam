@@ -37,13 +37,21 @@ public class WebcamDriver {
         }
     }
     /**
-     * Opens a camera at the specified resolution. If camera is already open
-     * it will change the resolution to the specified value
-     * @param width
-     * @param height
-     * @return
+     * Opens a camera at the closest match to the specified resolution.
+     * If camera is already open it will change the resolution to the specified value. If
+     * it is open it will also ignore the device string.
+     *
+     * @param width requested image width.
+     * @param height requested image height.
+     * @param device identifier for the device you wish to connect to. regex. if multiple
+     *               matches then first one is selected. null means pick default
+     * @return true if a camera has been successfully opened
      */
-    public native boolean open( int width , int height );
+    public native boolean open( int width , int height , String device );
+
+    public boolean open( int width , int height ) {
+        return open(width, height, null);
+    }
 
     public native boolean close();
 
@@ -67,6 +75,8 @@ public class WebcamDriver {
     public native void setExposure( boolean automatic , int value );
     public native void setGain( boolean automatic , int value );
     public native void setFocus( boolean automatic , int value );
+
+    public native String getDevice();
 
     public native String errorMessage();
 

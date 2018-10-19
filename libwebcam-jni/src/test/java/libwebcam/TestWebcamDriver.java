@@ -19,7 +19,6 @@ public class TestWebcamDriver {
 
     @Test
     public void openCamera() {
-        System.out.println("BEFORE");
         WebcamDriver driver = new WebcamDriver();
 
         System.out.println("opening");
@@ -31,6 +30,37 @@ public class TestWebcamDriver {
 
         System.out.println("Actual Resolution: "+driver.imageWidth()+"x"+driver.imageHeight());
 
+        System.out.println("Closing");
+        if( !driver.close() ) {
+            System.err.println("Failed: "+driver.errorMessage());
+            System.exit(1);
+        }
+        System.out.println("Done");
+    }
+
+    @Test
+    public void openNonExistantDevice() {
+        WebcamDriver driver = new WebcamDriver();
+
+        System.out.println("opening");
+
+        if( driver.open(640,480, "ASDASDSADSAD") ) {
+            System.err.println("Shouldn't have opened any device!"+driver.getDevice());
+            System.exit(1);
+        }
+        System.out.println("success");
+    }
+
+    @Test
+    public void openBRIO() {
+        WebcamDriver driver = new WebcamDriver();
+
+        System.out.println("opening");
+
+        if( !driver.open(640,480, ".*(BRIO).*") ) {
+            System.err.println("Failed: "+driver.errorMessage());
+            System.exit(1);
+        }
         System.out.println("Closing");
         if( !driver.close() ) {
             System.err.println("Failed: "+driver.errorMessage());

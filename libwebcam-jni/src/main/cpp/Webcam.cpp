@@ -8,6 +8,8 @@
 #include <stdio.h>
 #include <setjmp.h>
 #include <string.h>
+#include <regex>
+#include <sstream>
 
 using namespace std;
 
@@ -104,7 +106,17 @@ bool select_resolution( const webcam::DeviceInfo & device_info , int width , int
 }
 
 JNIEXPORT jboolean JNICALL Java_libwebcam_WebcamDriver_open
-  (JNIEnv *env, jobject obj, jint width, jint height) {
+  (JNIEnv *env, jobject obj, jint width, jint height, jstring jdevice_name ) {
+
+    bool success = true;
+    regex device_regex;
+    std::string str_regex = ".*";
+    if( jdevice_name != NULL ) {
+        const char* device_name = env->GetStringUTFChars(jdevice_name,0);
+        str_regex = device_name;
+        env->ReleaseStringUTFChars(jdevice_name,device_name);
+    }
+    device_regex.assign(str_regex);
 
 //  cout << "ENTER Java_libwebcam_WebcamDriver_open()" << endl;
     if( !camera_open ) {
@@ -118,13 +130,30 @@ JNIEXPORT jboolean JNICALL Java_libwebcam_WebcamDriver_open
 //        cout << " searching devices " << count << endl;
 
           if( count > 1 ) {
-            std::cout << "Multiple cameras to choose from. First first." << endl;
+            std::cout << "Multiple cameras to choose from. Selecting first matching." << endl;
           } else if( count == 0 ) {
             error_message = "No cameras found";
             return false;
           }
-          device_info = enumeration.get(0);
-          selected_device = 1; // 0 + 1
+
+          bool matched = false;
+          for( int deviceIdx = 0; deviceIdx < count; deviceIdx++ ) {
+              device_info = enumeration.get(deviceIdx);
+
+              cout << "device found '" << device_info.get_model_info().get_name() << "'" << endl;
+              if( regex_match(device_info.get_model_info().get_name(), device_regex) ) {
+                  selected_device = deviceIdx+1;
+                  matched = true;
+              }
+          }
+
+          if( !matched ) {
+              stringstream ss;
+              ss << "No matching device found for "<<str_regex;
+              error_message = ss.str();
+              return false;
+          }
+          
       } catch(const webcam::enumerator_exception & exc_) {
           error_message = exc_.what();
           std::cout<<exc_.what()<<std::endl;
@@ -134,7 +163,7 @@ JNIEXPORT jboolean JNICALL Java_libwebcam_WebcamDriver_open
 //        cout << " selecting resolution" << endl;
       if( !select_resolution( device_info,width,height,video_resolution,video_format) ) {
         error_message = "failed to select resolution";
-        return false;
+          return false;
       }
     } else {
        // see if the resolution has changed
@@ -142,12 +171,12 @@ JNIEXPORT jboolean JNICALL Java_libwebcam_WebcamDriver_open
        std::string format;
        if( !select_resolution( device_info,width,height,selected,format) ) {
           error_message = "failed to select resolution";
-          return false;
+           return false;
        }
        if( selected.get_width() == video_resolution.get_width() &&
            selected.get_height() == video_resolution.get_height() )
        {
-         return true;
+           return true;
        }
 
        // change camera resolution
@@ -398,6 +427,11 @@ JNIEXPORT void JNICALL Java_libwebcam_WebcamDriver_setFocus
       return;
     }
     device->set_focus(automatic,value);
+  }
+
+JNIEXPORT jstring JNICALL Java_libwebcam_WebcamDriver_getDevice
+  (JNIEnv *env, jobject) {
+    return env->NewStringUTF(device_info.get_model_info().get_name().c_str());
   }
 
 JNIEXPORT jstring JNICALL Java_libwebcam_WebcamDriver_errorMessage
