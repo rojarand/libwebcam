@@ -130,7 +130,7 @@ JNIEXPORT jboolean JNICALL Java_libwebcam_WebcamDriver_open
 //        cout << " searching devices " << count << endl;
 
           if( count > 1 ) {
-            std::cout << "Multiple cameras to choose from. Selecting first matching." << endl;
+            std::cout << "Multiple cameras to choose from. Selecting first matching. regex='" << str_regex << "`" << endl;
           } else if( count == 0 ) {
             error_message = "No cameras found";
             return false;
@@ -142,8 +142,10 @@ JNIEXPORT jboolean JNICALL Java_libwebcam_WebcamDriver_open
 
               cout << "device found '" << device_info.get_model_info().get_name() << "'" << endl;
               if( regex_match(device_info.get_model_info().get_name(), device_regex) ) {
+                  cout << "  matched!" << endl;
                   selected_device = deviceIdx+1;
                   matched = true;
+                  break;
               }
           }
 
