@@ -118,6 +118,16 @@ JNIEXPORT jboolean JNICALL Java_libwebcam_WebcamDriver_open
     }
     device_regex.assign(str_regex);
 
+    // if a specific device is requested, the camera is open, and the request doesn't match
+    // the current camera, close the open camera
+    if( jdevice_name != NULL && camera_open && !regex_match(device_info.get_model_info().get_name(), device_regex) ) {
+        cout << "device name changed" << endl;
+        device->close();
+        delete device;
+        device = NULL;
+        camera_open = false;
+    }
+
 //  cout << "ENTER Java_libwebcam_WebcamDriver_open()" << endl;
     if( !camera_open ) {
 //        cout << " camera not open already" << endl;
@@ -206,6 +216,7 @@ JNIEXPORT jboolean JNICALL Java_libwebcam_WebcamDriver_open
         camera_open = true;
         return true;
     } catch( webcam::webcam_exception &e ) {
+        camera_open = false;
         delete device;
         device = NULL;
         error_message = e.what();

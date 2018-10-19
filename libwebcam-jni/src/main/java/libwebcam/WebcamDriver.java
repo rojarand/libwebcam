@@ -39,7 +39,8 @@ public class WebcamDriver {
     /**
      * Opens a camera at the closest match to the specified resolution.
      * If camera is already open it will change the resolution to the specified value. If
-     * it is open it will also ignore the device string.
+     * it is open it and the device string doesn't match the current device it will close the camera
+     * and search for a match.
      *
      * @param width requested image width.
      * @param height requested image height.
