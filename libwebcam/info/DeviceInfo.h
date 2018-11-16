@@ -27,8 +27,8 @@ namespace webcam
 
 		const ModelInfo & get_model_info()const;
 		void set_model_info(ModelInfo & model_info_);
-		bool supports_format(const Format & format_)const;
-		Resolution get_highest_resolution(const Format & format_)const;
+		bool supports_format(int format_)const;
+		Resolution get_highest_resolution(int format_)const;
 
 		const ControlInfo& get_gain_info() const;
 		const ControlInfo& get_exposure_info() const;

@@ -48,7 +48,7 @@ task sourcesJar(type: Jar) {
 if( project.hasProperty("native_build_location")) {
     ext.build_location = project.property("native_build_location")
 } else {
-    ext.build_location = "../build"
+    ext.build_location = "../build_release"
 }
 if( !file("$ext.build_location").exists() ) {
     throw new GradleException("Native build directory $ext.build_location does not exist!")

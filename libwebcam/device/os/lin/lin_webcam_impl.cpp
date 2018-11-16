@@ -17,6 +17,7 @@
 #include <sstream>
 #include <algorithm>
 #include <iostream>
+#include <linux/videodev2.h>
 
 #include "lin_webcam_impl.h"
 
@@ -176,18 +177,18 @@ namespace webcam
 		fmt.type                = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 
 		const VideoSettings & video_settings = _device.get_video_settings();
-		const Format & format = video_settings.get_format();
+		int format = video_settings.get_format();
 		fmt.fmt.pix.width       = video_settings.get_width();
 		fmt.fmt.pix.height      = video_settings.get_height();
 		fmt.fmt.pix.field       = V4L2_FIELD_INTERLACED;
-		fmt.fmt.pix.pixelformat = format.get_native_format();
+		fmt.fmt.pix.pixelformat = (__u32)format;
 
 		if (-1 == xioctl(VIDIOC_S_FMT, &fmt))
 		{
 			throw webcam_exception("can not set video format", errno, _camera_number);
 		}
 
-		bool is_jpeg = (format==Format_JPEG()) || (format==Format_MJPEG());
+		bool is_jpeg = (format==V4L2_PIX_FMT_JPEG) || (format==V4L2_PIX_FMT_MJPEG);
 		if(is_jpeg)
 		{
 			struct v4l2_jpegcompression jpeg_compression;

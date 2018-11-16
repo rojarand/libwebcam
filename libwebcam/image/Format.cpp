@@ -1,118 +1,58 @@
 #include "Format.h"
+#include <linux/videodev2.h>
 
-namespace webcam
-{
+#include <iostream>
 
-	Format::~Format()
-	{
+namespace webcam {
 
-	}
-	
-	bool Format::operator == (const Format & format_)const
-	{
-		return native_equals(format_.get_native_format());
-	}
+    int lookup_format_four_cc(int format) {
+        char four_cc_str[5] =
+                {
+                        static_cast<char>((format >> 0) & 0xFF),
+                        static_cast<char>((format >> 8) & 0xFF),
+                        static_cast<char>((format >> 16)& 0xFF),
+                        static_cast<char>((format >> 24)& 0xFF),
+                        0
+                };
+        return lookup_format(std::string(four_cc_str));
+    }
 
-	Format_UNKN::Format_UNKN( const native_format& native_format_ ) : format(native_format_)
-    {
-	}
+    std::string lookup_format(int native_format_) {
+        switch (native_format_) {
+            case V4L2_PIX_FMT_RGB24:
+                return "RGB24";
+            case V4L2_PIX_FMT_BGR24:
+                return "BGR24";
+            case V4L2_PIX_FMT_YUYV:
+                return "YUYV";
+            case V4L2_PIX_FMT_H264:
+                return "H264";
+            case V4L2_PIX_FMT_JPEG:
+                return "JPEG";
+            case V4L2_PIX_FMT_MJPEG:
+                return "MJPG";
+            default:
+                return "UNKNOWN";
+        }
+    }
 
-	native_format Format_UNKN::get_native_format() const
-	{
-		return this->format;
-	}
+    int lookup_format( const std::string& format ) {
+        if( format.compare("RGB24"))
+            return V4L2_PIX_FMT_RGB24;
+        else if( format.compare("BGR24"))
+            return V4L2_PIX_FMT_BGR24;
+        else if( format.compare("BGR24"))
+            return V4L2_PIX_FMT_RGB24;
+        else if( format.compare("YUYV"))
+            return V4L2_PIX_FMT_YUYV;
+        else if( format.compare("H264"))
+            return V4L2_PIX_FMT_H264;
+        else if( format.compare("JPEG"))
+            return V4L2_PIX_FMT_JPEG;
+        else if( format.compare("MJPG"))
+            return V4L2_PIX_FMT_MJPEG;
+        else
+            throw "crap";
 
-	Format * Format_UNKN::clone()const
-	{
-		return new Format_UNKN(this->format);
-	}
-
-	Format * Format_BGR8::clone()const
-	{
-		return new Format_BGR8();
-	}
-
-	Format * Format_BMP24::clone()const
-	{
-		return new Format_BMP24();
-	}
-
-	Format * Format_RGB24::clone()const
-	{
-		return new Format_RGB24();
-	}
-
-	Format * Format_I420::clone()const
-	{
-		return new Format_I420();
-	}
-
-	Format * Format_YUY2::clone()const
-	{
-		return new Format_YUY2();
-	}
-
-	Format * Format_YUYV::clone()const
-	{
-		return new Format_YUYV();
-	}
-
-	Format * Format_H264::clone()const
-	{
-		return new Format_H264();
-	}
-
-	Format * Format_JPEG::clone()const
-	{
-		return new Format_JPEG();
-	}
-
-	Format * Format_MJPEG::clone()const
-	{
-		return new Format_MJPEG();
-	}
-
-	Format * create_format(native_format native_format_)
-	{
-		const Format_MJPEG FORMAT_MJPEG;
-		const Format_JPEG FORMAT_JPEG;
-		const Format_I420 FORMAT_I420;
-		const Format_YUYV FORMAT_YUYV;
-		const Format_YUY2 FORMAT_YUY2;
-		const Format_BMP24 FORMAT_BMP24;
-		const Format_RGB24 FORMAT_RGB24;
-		const Format_BGR8 FORMAT_BGR8;
-
-		const Format * const SUPPORTED_FORMATS[] = {
-				&FORMAT_MJPEG, &FORMAT_JPEG, &FORMAT_I420, &FORMAT_YUYV,
-				&FORMAT_YUY2, &FORMAT_BMP24, &FORMAT_RGB24, &FORMAT_BGR8 };
-
-		for(const Format * fmt: SUPPORTED_FORMATS){
-
-			if (fmt->native_equals(native_format_)){
-				return fmt->clone();
-			}
-		}
-		return new Format_UNKN(native_format_);
-	}
-
-	Format* create_format( std::string name ) {
-		const Format_MJPEG FORMAT_MJPEG;
-		const Format_JPEG FORMAT_JPEG;
-		const Format_I420 FORMAT_I420;
-		const Format_YUYV FORMAT_YUYV;
-		const Format_YUY2 FORMAT_YUY2;
-		const Format_BMP24 FORMAT_BMP24;
-		const Format_RGB24 FORMAT_RGB24;
-		const Format_BGR8 FORMAT_BGR8;
-
-		if( name == "BGR8" )
-			return FORMAT_BGR8.clone();
-		else if( name == "RGB24")
-			return FORMAT_RGB24.clone();
-		else if( name == "MJPG" )
-			return FORMAT_MJPEG.clone();
-		else
-			new Format_UNKN(0);
-	}
+    }
 }

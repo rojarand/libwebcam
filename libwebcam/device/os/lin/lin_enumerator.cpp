@@ -19,6 +19,7 @@
 
 
 #include "lin_enumerator.h"
+#include "image/Format.h"
 
 namespace webcam {
 
@@ -142,14 +143,13 @@ VideoInfoEnumeration enumerator::get_video_info_enumeration(int fd_)
 
 	while( fmt_enum.next(fd_) )
 	{
-		const Format * format = create_format(vid_fmtdesc.pixelformat);
+		int format = lookup_format_four_cc(vid_fmtdesc.pixelformat);
 		std::vector<webcam::Resolution> resolutions = get_resolutions(fd_, vid_fmtdesc.pixelformat);
 		for(const webcam::Resolution & resolution: resolutions)
 		{
-			webcam::VideoInfo video_info(resolution, *format, 0);
+			webcam::VideoInfo video_info(resolution, format, 0);
 			enumeration.put(video_info);
 		}
-		delete format;
 	}
 	return enumeration;
 }

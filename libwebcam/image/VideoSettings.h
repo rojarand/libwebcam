@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Format.h"
 #ifndef WIN32
 #include <linux/videodev2.h>
 #else
@@ -77,11 +76,10 @@ namespace webcam
 	public:
 		VideoSettings();
 		VideoSettings(const VideoSettings & video_settings_);
-		~VideoSettings();
 
 		const VideoSettings & operator=(const VideoSettings & video_settings_);
 
-		const Format & get_format()const;
+		int get_format() const;
 		unsigned int get_fps()const;
 		unsigned int get_height()const;
 		unsigned char get_quality()const;
@@ -90,14 +88,13 @@ namespace webcam
 		const Parameter<int>& get_focus() const;
         const Parameter<int>& get_exposure() const;
 
-        void set_format(const Format & format_);
+        void set_format(int format_);
 		void set_fps(unsigned int fps_);
 		void set_quality(unsigned char quality_);
 		void set_resolution(const Resolution & resolution_);
 	protected:
-		void free_format();
 		void assign_from(const VideoSettings & video_settings_);
-		Format * _format;
+		int _format;
 		unsigned int _fps;
 		unsigned char _quality;
 		Resolution _resolution;

@@ -24,6 +24,8 @@ public class WebcamDriver {
         try {
             NativeUtils.setLibraryName("webcamjni");
             // First try loading it locally from the devepmental path
+            success = success || NativeUtils.loadLocalPath(new File("build_release/libwebcam-jni"));
+            success = success || NativeUtils.loadLocalPath(new File("../build_release/libwebcam-jni"));
             success = success || NativeUtils.loadLocalPath(new File("build/libwebcam-jni"));
             success = success || NativeUtils.loadLocalPath(new File("../build/libwebcam-jni"));
             success = success || NativeUtils.loadLibraryFromJar("/");

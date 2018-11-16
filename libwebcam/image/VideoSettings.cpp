@@ -58,7 +58,7 @@ namespace webcam
 	////////////////////////////////////////////////////////
 
 	VideoSettings::VideoSettings()
-		: _format(new Format_UNKN(0))
+		: _format(0)
 		, _fps(FPS_Slow)
 		, _quality(Quality_Medium)
 	{
@@ -69,10 +69,6 @@ namespace webcam
 		assign_from(video_settings_);
 	}
 
-	VideoSettings::~VideoSettings()
-	{
-		free_format();
-	}
 
 	const VideoSettings & VideoSettings::operator = (const VideoSettings & video_settings_)
 	{
@@ -83,9 +79,9 @@ namespace webcam
 		return *this;
 	}
 
-	const Format & VideoSettings::get_format()const
+	int VideoSettings::get_format()const
 	{
-		return *_format;
+		return _format;
 	}
 	unsigned int VideoSettings::get_fps()const
 	{
@@ -108,10 +104,9 @@ namespace webcam
 		return _resolution.get_width();
 	}
 
-	void VideoSettings::set_format(const Format & format_)
+	void VideoSettings::set_format(int format_)
 	{
-		free_format();
-		_format = format_.clone();
+		_format = format_;
 	}
 
 	void VideoSettings::set_fps(unsigned int fps_)
@@ -142,18 +137,9 @@ namespace webcam
 
 	void VideoSettings::assign_from(const VideoSettings & video_settings_)
 	{
-		_format = video_settings_.get_format().clone();
+		_format = video_settings_.get_format();
 		_fps = video_settings_.get_fps();
 		_quality = video_settings_.get_quality();
 		_resolution = video_settings_.get_resolution();
 	}
-
-	void VideoSettings::free_format()
-	{
-		if(_format != nullptr){
-			delete _format;
-			_format = nullptr;
-		}
-	}
-
 }
