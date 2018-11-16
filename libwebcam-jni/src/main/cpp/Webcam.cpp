@@ -89,7 +89,7 @@ bool select_resolution( const webcam::DeviceInfo & device_info , int width , int
     for (size_t video_index = 0; video_index < video_count; video_index++) {
         const webcam::VideoInfo &video_info = video_info_enumeration.get(video_index);
         std::string format_name =  webcam::lookup_format(video_info.get_format());
-        cout << "image[" << video_index << "] " << format_name << endl;
+//        cout << "image[" << video_index << "] " << format_name << " ID " << video_info.get_format() << endl;
         if( format_name != "MJPG")
             continue;
         const webcam::Resolution &resolution = video_info.get_resolution();
@@ -132,14 +132,14 @@ JNIEXPORT jboolean JNICALL Java_libwebcam_WebcamDriver_open
 
 //  cout << "ENTER Java_libwebcam_WebcamDriver_open()" << endl;
     if( !camera_open ) {
-        cout << " camera not open already" << endl << flush;
+//        cout << " camera not open already" << endl << flush;
 
       // Pick a webcam to open. The first one is a great choice!
       try {
           const webcam::DeviceInfoEnumeration & enumeration = webcam::enumerator::enumerate();
           const size_t count = enumeration.count();
 
-        cout << " searching devices " << count << endl << endl;
+//        cout << " searching devices " << count << endl << endl;
 
           if( count > 1 ) {
             std::cout << "Multiple cameras to choose from. Selecting first matching. regex='" << str_regex << "`" << endl;
@@ -150,46 +150,40 @@ JNIEXPORT jboolean JNICALL Java_libwebcam_WebcamDriver_open
 
           bool matched = false;
           for( size_t deviceIdx = 0; deviceIdx < count; deviceIdx++ ) {
-              cout << "Start Device Loop " << deviceIdx << endl;
+//              cout << "Start Device Loop " << deviceIdx << endl;
               device_info = enumeration.get(deviceIdx);
 
               std::string device_name = device_info.get_model_info().get_name();
-              cout << "device found '" << device_name << "'" << endl;
+//              cout << "device found '" << device_name << "'" << endl;
               if( regex_match(device_name, device_regex) ) {
                   cout << "  matched! " << device_name << endl;
                   selected_device = deviceIdx+1;
-                  cout << "  FOO A! " << device_name << endl << flush;
                   matched = true;
-                  cout << "  FOO B! " << device_name << endl << flush;
                   break;
               }
           }
-          cout << "  FOO C! " << endl << flush;
 
           if( !matched ) {
               stringstream ss;
               ss << "No matching device found for "<<str_regex;
               error_message = ss.str();
               return JNI_FALSE;
-          } else {
-              cout << "Still Good s" << endl << std::flush;
+//          } else {
+//              cout << "Still Good s" << endl << std::flush;
           }
-          cout << "  FOO D! " << endl << flush;
           
       } catch(const webcam::enumerator_exception & exc_) {
-          cout << "Failed on exception" << endl << std::flush;
           error_message = exc_.what();
           std::cout<<exc_.what()<<std::endl;
           return JNI_FALSE;
       }
 
-      cout << " selecting resolution" << endl << flush;
+//      cout << " selecting resolution" << endl << flush;
       if( !select_resolution( device_info,width,height,video_resolution,video_format) ) {
         error_message = "failed to select resolution";
           return JNI_FALSE;
       }
     } else {
-      cout << "  WTF A! " << endl << flush;
       // see if the resolution has changed
       webcam::Resolution selected;
       std::string format;
@@ -212,14 +206,14 @@ JNIEXPORT jboolean JNICALL Java_libwebcam_WebcamDriver_open
        device = NULL;
     }
 
-    cout << " configuring settings" << endl << flush;
+//    cout << " configuring settings" << endl << flush;
     int format = webcam::lookup_format(video_format);
     webcam::VideoSettings video_settings;
     video_settings.set_format(format);
     video_settings.set_fps(500);
     video_settings.set_resolution(video_resolution);
 
-    cout << " opening" << endl << flush;
+//    cout << " opening" << endl << flush;
 
     try {
         device = new webcam::Device(selected_device,video_settings,device_info);
