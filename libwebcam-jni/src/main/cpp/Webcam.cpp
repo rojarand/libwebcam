@@ -160,6 +160,8 @@ JNIEXPORT jboolean JNICALL Java_libwebcam_WebcamDriver_open
                   selected_device = deviceIdx+1;
                   matched = true;
                   break;
+              } else {
+                  cout << "  didn't match " << device_name << endl;
               }
           }
 
