@@ -90,7 +90,7 @@ bool select_resolution( const webcam::DeviceInfo & device_info , int width , int
         const webcam::VideoInfo &video_info = video_info_enumeration.get(video_index);
         std::string format_name =  webcam::lookup_format(video_info.get_format());
 //        cout << "image[" << video_index << "] " << format_name << " ID " << video_info.get_format() << endl;
-        if( format_name != "MJPG")
+        if( format_name != "MJPG" && format_name != "JPEG")
             continue;
         const webcam::Resolution &resolution = video_info.get_resolution();
         int dw = width-resolution.get_width();
@@ -180,7 +180,7 @@ JNIEXPORT jboolean JNICALL Java_libwebcam_WebcamDriver_open
 
 //      cout << " selecting resolution" << endl << flush;
       if( !select_resolution( device_info,width,height,video_resolution,video_format) ) {
-        error_message = "failed to select resolution";
+        error_message = "failed to select resolution. No MJPG modes?";
           return JNI_FALSE;
       }
     } else {
@@ -188,7 +188,7 @@ JNIEXPORT jboolean JNICALL Java_libwebcam_WebcamDriver_open
       webcam::Resolution selected;
       std::string format;
       if( !select_resolution( device_info,width,height,selected,format) ) {
-         error_message = "failed to select resolution";
+         error_message = "failed to select resolution. No MJPG modes?";
           return JNI_FALSE;
       }
       if( selected.get_width() == video_resolution.get_width() &&
@@ -233,12 +233,12 @@ JNIEXPORT jboolean JNICALL Java_libwebcam_WebcamDriver_open
 JNIEXPORT jboolean JNICALL Java_libwebcam_WebcamDriver_close
   (JNIEnv *env, jobject obj) {
   if( !camera_open )
-      return true;
+      return JNI_TRUE;
 
   device->close();
   delete device;
   device = NULL;
-  return true;
+  return JNI_TRUE;
 }
 
 
