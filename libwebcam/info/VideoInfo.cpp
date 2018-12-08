@@ -2,8 +2,8 @@
 
 namespace webcam
 {
-	VideoInfo::VideoInfo(const Resolution & resolution_, int format_, int image_byte_count_)
-		: _resolution(resolution_)
+	VideoInfo::VideoInfo(const Resolutions & resolutions_, int format_, int image_byte_count_)
+		: _resolutions(resolutions_)
 		, _format(format_)
 		, _image_byte_count(image_byte_count_)
 	{
@@ -12,14 +12,14 @@ namespace webcam
 
 	VideoInfo::VideoInfo(const VideoInfo & video_info_){
 
-		_resolution			= video_info_.get_resolution();
+		_resolutions			= video_info_.get_resolutions();
 		_format				= video_info_.get_format();
 		_image_byte_count	= video_info_.get_image_byte_count();
 	}
 
-	const Resolution & VideoInfo::get_resolution()const
+	const Resolutions & VideoInfo::get_resolutions()const
 	{
-		return _resolution;
+		return _resolutions;
 	}
 
 	int VideoInfo::get_format() const

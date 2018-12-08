@@ -19,7 +19,7 @@ extern "C" {
 bool camera_open = false;
 webcam::DeviceInfo device_info;
 webcam::VideoSettings video_settings;
-webcam::Resolution video_resolution;
+webcam::Shape video_resolution;
 std::string video_format = "";
 size_t selected_device = 99999;
 std::string error_message = "";
@@ -78,7 +78,7 @@ static struct jpeg_error_mgr *my_error_mgr(struct my_jpeg_error *err)
 }
 
 bool select_resolution( const webcam::DeviceInfo & device_info , int width , int height ,
-                        webcam::Resolution& selected , std::string &format )
+                        webcam::Shape& selected , std::string &format )
 {
     const webcam::VideoInfoEnumeration & video_info_enumeration =
                         device_info.get_video_info_enumeration();
@@ -90,20 +90,24 @@ bool select_resolution( const webcam::DeviceInfo & device_info , int width , int
     for (size_t video_index = 0; video_index < video_count; video_index++) {
         const webcam::VideoInfo &video_info = video_info_enumeration.get(video_index);
         std::string format_name =  webcam::lookup_format(video_info.get_format());
-        const webcam::Resolution &resolution = video_info.get_resolution();
+        const webcam::Resolutions &resolutions = video_info.get_resolutions();
 
 //        cout << "  image[" << video_index << "] " << format_name << " ID " << video_info.get_format()
 //             <<  " res " << resolution.get_width() << " x " << resolution.get_height() << endl;
         if( format_name != "MJPG" && format_name != "JPEG")
             continue;
-        int dw = width-resolution.get_width();
-        int dh = height-resolution.get_height();
-        int score = dw*dw + dh*dh;
 
-        if( best_score == -1 || best_score > score ) {
-            best_score = score;
-            selected = resolution;
-            format = format_name;
+        int format_width,format_height;
+        if( resolutions.find_best_match(width,height,format_width,format_height) ) {
+            int dw = width-format_width;
+            int dh = height-format_height;
+            int score = dw*dw + dh*dh;
+
+            if( best_score == -1 || best_score > score ) {
+                best_score = score;
+                selected = webcam::Shape(format_width,format_height);
+                format = format_name;
+            }
         }
     }
 
@@ -190,14 +194,14 @@ JNIEXPORT jboolean JNICALL Java_libwebcam_WebcamDriver_open
       }
     } else {
       // see if the resolution has changed
-      webcam::Resolution selected;
+      webcam::Shape selected;
       std::string format;
       if( !select_resolution( device_info,width,height,selected,format) ) {
          error_message = "failed to select resolution. No MJPG modes?";
           return JNI_FALSE;
       }
-      if( selected.get_width() == video_resolution.get_width() &&
-          selected.get_height() == video_resolution.get_height() )
+      if( selected.width == video_resolution.width &&
+          selected.height == video_resolution.height )
       {
           return JNI_TRUE;
       }
@@ -284,11 +288,11 @@ JNIEXPORT jboolean JNICALL Java_libwebcam_WebcamDriver_capture
     (void) jpeg_read_header(&dinfo, TRUE);
     (void) jpeg_start_decompress(&dinfo);
 
-    if( dinfo.output_width != video_resolution.get_width() ) {
+    if( dinfo.output_width != video_resolution.width ) {
         error_message = "Unexpected width in jpeg.";
         goto fail;
     }
-    if( dinfo.output_height != video_resolution.get_height() ) {
+    if( dinfo.output_height != video_resolution.height ) {
         error_message = "Unexpected width in jpeg.";
         goto fail;
     }
@@ -313,12 +317,12 @@ JNIEXPORT jboolean JNICALL Java_libwebcam_WebcamDriver_capture
 
 JNIEXPORT jint JNICALL Java_libwebcam_WebcamDriver_imageWidth
   (JNIEnv *env, jobject obj) {
-    return video_resolution.get_width();
+    return video_resolution.width;
   }
 
 JNIEXPORT jint JNICALL Java_libwebcam_WebcamDriver_imageHeight
   (JNIEnv *env, jobject obj) {
-    return video_resolution.get_height();
+    return video_resolution.height;
   }
 
 JNIEXPORT jint JNICALL Java_libwebcam_WebcamDriver_imageBands

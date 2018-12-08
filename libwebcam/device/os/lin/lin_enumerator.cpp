@@ -145,19 +145,17 @@ VideoInfoEnumeration enumerator::get_video_info_enumeration(int fd_)
 	{
 		int format = lookup_format_four_cc(vid_fmtdesc.pixelformat);
 		std::cout << " found format four_cc " << lookup_format(format) << std::endl;
-		std::vector<webcam::Resolution> resolutions = get_resolutions(fd_, vid_fmtdesc.pixelformat);
-		for(const webcam::Resolution & resolution: resolutions)
-		{
-			webcam::VideoInfo video_info(resolution, format, 0);
-			enumeration.put(video_info);
-		}
+		Resolutions resolutions = get_resolutions(fd_, vid_fmtdesc.pixelformat);
+		webcam::VideoInfo video_info(resolutions, format, 0);
+		enumeration.put(video_info);
 	}
 	return enumeration;
 }
 
-std::vector<webcam::Resolution> enumerator::get_resolutions(int fd_, unsigned int pixelformat_)
+Resolutions enumerator::get_resolutions(int fd_, unsigned int pixelformat_)
 {
-	std::vector<webcam::Resolution> resolutions;
+	// Technically it can support multiple types. We will ignore that and force it to one type
+	Resolutions resolutions;
 	struct v4l2_frmsizeenum frmsize;
 	struct v4l2_frmivalenum frmival;
 	memset(&frmival, 0, sizeof(frmival));
@@ -176,9 +174,7 @@ std::vector<webcam::Resolution> enumerator::get_resolutions(int fd_, unsigned in
 //			frmival.pixel_format = pixelformat_;
 //			frmival.width = width;
 //			frmival.height = height;
-
-			webcam::Resolution resolution(width, height);
-			resolutions.push_back(resolution);
+			resolutions._resolutions.push_back(Shape(width, height));
 
 //			while( frmival_enum.next(fd_) ) {
 //				//frmival contains frame rating
@@ -191,18 +187,15 @@ std::vector<webcam::Resolution> enumerator::get_resolutions(int fd_, unsigned in
 					  frmsize.stepwise.min_height << " to " << frmsize.stepwise.max_height <<
 					  " step " << frmsize.stepwise.step_height << std::endl;
 
-		    int height = frmsize.stepwise.min_height;
-            for( int width = frmsize.stepwise.min_width;
-                 width <= frmsize.stepwise.max_width;
-                 width += frmsize.stepwise.step_width ) {
-
-                webcam::Resolution resolution(width, height);
-                resolutions.push_back(resolution);
-
-                height += frmsize.stepwise.step_height;
-            }
+			resolutions._width_min = frmsize.stepwise.min_width;
+			resolutions._width_max = frmsize.stepwise.max_width;
+			resolutions._width_step = frmsize.stepwise.step_width;
+			resolutions._height_min = frmsize.stepwise.min_height;
+			resolutions._height_max = frmsize.stepwise.max_height;
+			resolutions._height_step = frmsize.stepwise.step_height;
 		}
 	}
+
 	return resolutions;
 }
 

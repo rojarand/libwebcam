@@ -49,18 +49,31 @@ namespace webcam
 		return false;
 	}
 
-	Resolution DeviceInfo::get_highest_resolution(int format_)const
+	Shape DeviceInfo::get_highest_resolution(int format_)const
 	{
-		Resolution current_resolution(0, 0);
+        Shape current_resolution(0, 0);
+        int best_area = 0;
 		size_t count = _video_info_enumeration.count();
 		for (size_t index = 0; index < count; index++){
 			const webcam::VideoInfo & video_info = _video_info_enumeration.get(index);
 			if (video_info.get_format() == format_)
 			{
-				const Resolution & new_resolution = video_info.get_resolution();
-				if (current_resolution < new_resolution)
-				{
-					current_resolution = new_resolution;
+				const Resolutions & r = video_info.get_resolutions();
+
+				for( size_t i = 0; i < r._resolutions.size(); i++ ) {
+					const Shape& shape = r._resolutions.at(i);
+					int area = shape.width*shape.height;
+					if( area > best_area ) {
+						best_area = area;
+						current_resolution.width = shape.width;
+						current_resolution.height = shape.height;
+					}
+				}
+				int area = r._height_max*r._width_max;
+				if( area > best_area ) {
+					best_area = area;
+					current_resolution.width = r._width_max;
+					current_resolution.height = r._height_max;
 				}
 			}
 		}
