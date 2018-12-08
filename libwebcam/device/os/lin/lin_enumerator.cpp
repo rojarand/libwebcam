@@ -85,7 +85,7 @@ DeviceInfoEnumeration enumerator::enumerate()
 
 		int fd = open(device_file.c_str(), O_RDONLY);
 		if(ERROR != fd){
-
+            std::cout << "device = " << device_file << std::endl;
 			webcam::DeviceInfo device_info;
 
 			ModelInfo model_info = get_model_info(fd);
@@ -144,6 +144,7 @@ VideoInfoEnumeration enumerator::get_video_info_enumeration(int fd_)
 	while( fmt_enum.next(fd_) )
 	{
 		int format = lookup_format_four_cc(vid_fmtdesc.pixelformat);
+		std::cout << " found format four_cc " << lookup_format(format) << std::endl;
 		std::vector<webcam::Resolution> resolutions = get_resolutions(fd_, vid_fmtdesc.pixelformat);
 		for(const webcam::Resolution & resolution: resolutions)
 		{

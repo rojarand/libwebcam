@@ -86,13 +86,14 @@ bool select_resolution( const webcam::DeviceInfo & device_info , int width , int
 
     int best_score = -1;
 
+    cout << "Total Video Modes " <<video_count<< endl;
     for (size_t video_index = 0; video_index < video_count; video_index++) {
         const webcam::VideoInfo &video_info = video_info_enumeration.get(video_index);
         std::string format_name =  webcam::lookup_format(video_info.get_format());
         const webcam::Resolution &resolution = video_info.get_resolution();
 
-        cout << "image[" << video_index << "] " << format_name << " ID " << video_info.get_format()
-             <<  "res " << resolution.get_width() << " x " << resolution.get_height() << endl;
+//        cout << "  image[" << video_index << "] " << format_name << " ID " << video_info.get_format()
+//             <<  " res " << resolution.get_width() << " x " << resolution.get_height() << endl;
         if( format_name != "MJPG" && format_name != "JPEG")
             continue;
         int dw = width-resolution.get_width();
@@ -141,7 +142,7 @@ JNIEXPORT jboolean JNICALL Java_libwebcam_WebcamDriver_open
           const webcam::DeviceInfoEnumeration & enumeration = webcam::enumerator::enumerate();
           const size_t count = enumeration.count();
 
-//        cout << " searching devices " << count << endl << endl;
+        cout << " Searching v4l devices. total = " << count << endl << endl;
 
           if( count > 1 ) {
             std::cout << "Multiple cameras to choose from. Selecting first matching. regex='" << str_regex << "`" << endl;
