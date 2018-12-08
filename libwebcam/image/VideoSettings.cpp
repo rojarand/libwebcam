@@ -3,10 +3,10 @@
 namespace webcam
 {
 
-	const short Resolution::DEFAULT_WIDTH = 320;
-	const short Resolution::DEFAULT_HEIGHT = 240;
+	const int Resolution::DEFAULT_WIDTH = 320;
+	const int Resolution::DEFAULT_HEIGHT = 240;
 
-	Resolution::Resolution(short width_, short height_)
+	Resolution::Resolution(int width_, int height_)
 		: _width(width_)
 		, _height(height_)
 	{
@@ -35,22 +35,22 @@ namespace webcam
 		return false;
 	}
 
-	short Resolution::get_width()const
+    int Resolution::get_width()const
 	{
 		return _width;
 	}
 
-	short Resolution::get_height()const
+    int Resolution::get_height()const
 	{
 		return _height;
 	}
 
-	void Resolution::set_width(short width_)
+	void Resolution::set_width(int width_)
 	{
 		_width = width_;
 	}
 
-	void Resolution::set_height(short height_)
+	void Resolution::set_height(int height_)
 	{
 		_height = height_;
 	}

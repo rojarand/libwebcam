@@ -172,17 +172,35 @@ std::vector<webcam::Resolution> enumerator::get_resolutions(int fd_, unsigned in
 			unsigned int width = frmsize.discrete.width;
 			unsigned int height = frmsize.discrete.height;
 
-			property_enumerator<v4l2_frmivalenum> frmival_enum(frmival, VIDIOC_ENUM_FRAMEINTERVALS);
-			frmival.pixel_format = pixelformat_;
-			frmival.width = width;
-			frmival.height = height;
+//			property_enumerator<v4l2_frmivalenum> frmival_enum(frmival, VIDIOC_ENUM_FRAMEINTERVALS);
+//			frmival.pixel_format = pixelformat_;
+//			frmival.width = width;
+//			frmival.height = height;
 
 			webcam::Resolution resolution(width, height);
 			resolutions.push_back(resolution);
 
-			while( frmival_enum.next(fd_) ) {
-				//frmival contains frame rating
-			}
+//			while( frmival_enum.next(fd_) ) {
+//				//frmival contains frame rating
+//			}
+		} else if( frmsize.type == V4L2_FRMSIZE_TYPE_STEPWISE ) {
+			std::cout << "  stepwise resolution. width = " <<
+					  frmsize.stepwise.min_width << " to " << frmsize.stepwise.max_width <<
+					  " step " << frmsize.stepwise.step_width << std::endl;
+			std::cout << "                       height = " <<
+					  frmsize.stepwise.min_height << " to " << frmsize.stepwise.max_height <<
+					  " step " << frmsize.stepwise.step_height << std::endl;
+
+		    int height = frmsize.stepwise.min_height;
+            for( int width = frmsize.stepwise.min_width;
+                 width <= frmsize.stepwise.max_width;
+                 width += frmsize.stepwise.step_width ) {
+
+                webcam::Resolution resolution(width, height);
+                resolutions.push_back(resolution);
+
+                height += frmsize.stepwise.step_height;
+            }
 		}
 	}
 	return resolutions;

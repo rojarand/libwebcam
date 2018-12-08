@@ -29,19 +29,19 @@ namespace webcam
 	class Resolution
 	{
 	public:
-		static const short DEFAULT_WIDTH;
-		static const short DEFAULT_HEIGHT;
-		Resolution(short width_ = DEFAULT_WIDTH, short height_ = DEFAULT_HEIGHT);
+		static const int DEFAULT_WIDTH;
+		static const int DEFAULT_HEIGHT;
+		Resolution(int width_ = DEFAULT_WIDTH, int height_ = DEFAULT_HEIGHT);
 		bool operator < (const Resolution & resolution_)const;
 		bool operator != (const Resolution & resolution_)const;
-		short get_width()const;
-		short get_height()const;
+		int get_width()const;
+		int get_height()const;
 
-		void set_width(short width_);
-		void set_height(short height_);
+		void set_width(int width_);
+		void set_height(int height_);
 	protected:
-		short _width;
-		short _height;
+		int _width;
+		int _height;
 	};
 
 	template <class T>
