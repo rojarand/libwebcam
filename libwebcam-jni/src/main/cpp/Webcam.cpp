@@ -89,10 +89,12 @@ bool select_resolution( const webcam::DeviceInfo & device_info , int width , int
     for (size_t video_index = 0; video_index < video_count; video_index++) {
         const webcam::VideoInfo &video_info = video_info_enumeration.get(video_index);
         std::string format_name =  webcam::lookup_format(video_info.get_format());
-//        cout << "image[" << video_index << "] " << format_name << " ID " << video_info.get_format() << endl;
+        const webcam::Resolution &resolution = video_info.get_resolution();
+
+        cout << "image[" << video_index << "] " << format_name << " ID " << video_info.get_format()
+             <<  "res " << resolution.get_width() << " x " << resolution.get_height() << endl;
         if( format_name != "MJPG" && format_name != "JPEG")
             continue;
-        const webcam::Resolution &resolution = video_info.get_resolution();
         int dw = width-resolution.get_width();
         int dh = height-resolution.get_height();
         int score = dw*dw + dh*dh;
