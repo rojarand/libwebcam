@@ -30,6 +30,9 @@ namespace webcam
 		bool supports_format(int format_)const;
 		Shape get_highest_resolution(int format_)const;
 
+        const std::string& get_port() const;
+        std::string& get_port();
+
 		const ControlInfo& get_gain_info() const;
 		const ControlInfo& get_exposure_info() const;
 		const ControlInfo& get_focus_info() const;
@@ -40,6 +43,7 @@ namespace webcam
 
 	private:
 		ModelInfo _model_info;
+        std::string _port; // e.g. /dev/video0
 		VideoInfoEnumeration _video_info_enumeration;
 
 		ControlInfo _control_gain;

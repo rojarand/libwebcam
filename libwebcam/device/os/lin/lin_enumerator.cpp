@@ -89,6 +89,7 @@ DeviceInfoEnumeration enumerator::enumerate()
 			webcam::DeviceInfo device_info;
 
 			ModelInfo model_info = get_model_info(fd);
+			device_info.get_port() = device_file;
 			device_info.set_model_info(model_info);
 
 			VideoInfoEnumeration video_enumeration = get_video_info_enumeration(fd);

@@ -456,7 +456,12 @@ JNIEXPORT void JNICALL Java_libwebcam_WebcamDriver_setFocus
     device->set_focus(automatic,value);
   }
 
-JNIEXPORT jstring JNICALL Java_libwebcam_WebcamDriver_getDevice
+JNIEXPORT jstring JNICALL Java_libwebcam_WebcamDriver_getPort
+        (JNIEnv *env, jobject) {
+    return env->NewStringUTF(device_info.get_port().c_str());
+}
+
+JNIEXPORT jstring JNICALL Java_libwebcam_WebcamDriver_getDeviceType
   (JNIEnv *env, jobject) {
     return env->NewStringUTF(device_info.get_model_info().get_name().c_str());
   }

@@ -79,7 +79,11 @@ public class WebcamDriver {
     public native void setGain( boolean automatic , int value );
     public native void setFocus( boolean automatic , int value );
 
-    public native String getDevice();
+    // e.g. /dev/video0
+    public native String getPort();
+
+    // e.g. Logitech BRIO
+    public native String getDeviceType();
 
     public native String errorMessage();
 

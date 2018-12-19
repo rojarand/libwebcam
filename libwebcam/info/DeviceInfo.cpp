@@ -80,6 +80,14 @@ namespace webcam
 		return current_resolution;
 	}
 
+	const std::string& DeviceInfo::get_port() const {
+		return _port;
+	}
+
+	std::string& DeviceInfo::get_port() {
+		return _port;
+	}
+
 	const ControlInfo& DeviceInfo::get_gain_info() const {
 		return _control_gain;
 	}
