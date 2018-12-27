@@ -28,7 +28,13 @@ namespace webcam
 		const ModelInfo & get_model_info()const;
 		void set_model_info(ModelInfo & model_info_);
 		bool supports_format(int format_)const;
-		Resolution get_highest_resolution(int format_)const;
+		Shape get_highest_resolution(int format_)const;
+
+        const std::string& get_port() const;
+        std::string& get_port();
+
+		const std::string& get_serial() const;
+		std::string& get_serial();
 
 		const ControlInfo& get_gain_info() const;
 		const ControlInfo& get_exposure_info() const;
@@ -40,6 +46,8 @@ namespace webcam
 
 	private:
 		ModelInfo _model_info;
+        std::string _port; // e.g. /dev/video0
+        std::string _serial; // device serial number, if available
 		VideoInfoEnumeration _video_info_enumeration;
 
 		ControlInfo _control_gain;

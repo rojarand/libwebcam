@@ -1,59 +1,51 @@
+#include <algorithm>
 #include "VideoSettings.h"
 
 namespace webcam
 {
+    Shape::Shape( int  width, int height) {
+        this->width = width;
+        this->height = height;
+    }
+    Shape::Shape() : width(0),height(0) {
 
-	const short Resolution::DEFAULT_WIDTH = 320;
-	const short Resolution::DEFAULT_HEIGHT = 240;
+    }
 
-	Resolution::Resolution(short width_, short height_)
-		: _width(width_)
-		, _height(height_)
+	Resolutions::Resolutions(  ) : _width_min(0), _width_max(0), _width_step(0),
+								   _height_min(0), _height_max(0), _height_step(0)
 	{
-
 	}
 
-	bool Resolution::operator < (const Resolution & resolution_)const
-	{
-		int area1 = _width * _height;
-		int area2 = resolution_.get_width() * resolution_.get_height();
-		return area1 < area2;
-	}
+	bool Resolutions::find_best_match( int request_width , int request_height ,
+									   int &selected_width , int &selected_height ) const {
+		if(!_resolutions.empty()) {
+            // minimize the difference in area
+            int best_score = -1;
+            for( size_t i = 0; i < this->_resolutions.size(); i++ ) {
+                const Shape &shape = _resolutions.at(i);
 
-	bool Resolution::operator != (const Resolution & resolution_)const
-	{
-		if (_width != resolution_.get_width())
-		{
-			return true;
-		}
+                int dw = request_width-shape.width;
+                int dh = request_height-shape.height;
+                int score = dw*dw + dh*dh;
 
-		if (_height != resolution_.get_height())
-		{
-			return true;
-		}
+                if( best_score == -1 || best_score > score ) {
+                    selected_width = shape.width;
+                    selected_height = shape.height;
+                    best_score = score;
+                }
+            }
 
+            return best_score != -1;
+        } else if(_width_step > 0 && _height_step > 0  ){
+            selected_width = _width_step*((request_width-_width_min)/_width_step) + _width_min;
+            selected_height = _height_step*((request_height-_height_min)/_height_step) + _height_min;
+
+            selected_width = std::min(selected_width,_width_max);
+            selected_height = std::min(selected_height,_height_max);
+            return true;
+        }
 		return false;
-	}
-
-	short Resolution::get_width()const
-	{
-		return _width;
-	}
-
-	short Resolution::get_height()const
-	{
-		return _height;
-	}
-
-	void Resolution::set_width(short width_)
-	{
-		_width = width_;
-	}
-
-	void Resolution::set_height(short height_)
-	{
-		_height = height_;
-	}
+    }
 
 	////////////////////////////////////////////////////////
 
@@ -87,21 +79,18 @@ namespace webcam
 	{
 		return _fps;
 	}
-	unsigned int VideoSettings::get_height()const
+	int VideoSettings::get_height()const
 	{
-		return _resolution.get_height();
+		return _height;
 	}
 	unsigned char VideoSettings::get_quality()const
 	{
 		return _quality;
 	}
-	const Resolution & VideoSettings::get_resolution()const
+
+	int VideoSettings::get_width()const
 	{
-		return _resolution;
-	}
-	unsigned int VideoSettings::get_width()const
-	{
-		return _resolution.get_width();
+		return _width;
 	}
 
 	void VideoSettings::set_format(int format_)
@@ -130,9 +119,10 @@ namespace webcam
 		}
 	}
 
-	void VideoSettings::set_resolution(const Resolution & resolution_)
+	void VideoSettings::set_resolution(const Shape & resolution_)
 	{
-		_resolution = resolution_;
+		this->_width = resolution_.width;
+		this->_height = resolution_.height;
 	}
 
 	void VideoSettings::assign_from(const VideoSettings & video_settings_)
@@ -140,6 +130,7 @@ namespace webcam
 		_format = video_settings_.get_format();
 		_fps = video_settings_.get_fps();
 		_quality = video_settings_.get_quality();
-		_resolution = video_settings_.get_resolution();
+		_width = video_settings_.get_width();
+		_height = video_settings_.get_height();
 	}
 }

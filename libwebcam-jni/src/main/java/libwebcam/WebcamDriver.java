@@ -79,7 +79,14 @@ public class WebcamDriver {
     public native void setGain( boolean automatic , int value );
     public native void setFocus( boolean automatic , int value );
 
-    public native String getDevice();
+    // e.g. /dev/video0
+    public native String getPort();
+
+    // USB serial number or empty string if non was found
+    public native String getSerialNumber();
+
+    // e.g. Logitech BRIO
+    public native String getDeviceType();
 
     public native String errorMessage();
 

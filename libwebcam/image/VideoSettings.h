@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #ifndef WIN32
 #include <linux/videodev2.h>
 #else
@@ -26,22 +28,25 @@ namespace webcam
 		FPS_Default = FPS_Slow,
 	};
 
-	class Resolution
-	{
+	class Shape {
 	public:
-		static const short DEFAULT_WIDTH;
-		static const short DEFAULT_HEIGHT;
-		Resolution(short width_ = DEFAULT_WIDTH, short height_ = DEFAULT_HEIGHT);
-		bool operator < (const Resolution & resolution_)const;
-		bool operator != (const Resolution & resolution_)const;
-		short get_width()const;
-		short get_height()const;
+		int width,height;
 
-		void set_width(short width_);
-		void set_height(short height_);
-	protected:
-		short _width;
-		short _height;
+		Shape( int  width, int height);
+		Shape();
+	};
+
+	class Resolutions {
+	public:
+		Resolutions();
+
+		// Selects the allowed resolution which is the closest match to the requested
+		bool find_best_match( int request_width , int request_height ,
+							  int &selected_width , int &selected_height ) const;
+
+		std::vector<Shape> _resolutions;
+		int _width_min,_width_max,_width_step;
+		int _height_min,_height_max,_height_step;
 	};
 
 	template <class T>
@@ -81,23 +86,23 @@ namespace webcam
 
 		int get_format() const;
 		unsigned int get_fps()const;
-		unsigned int get_height()const;
 		unsigned char get_quality()const;
-		const Resolution & get_resolution()const;
-		unsigned int get_width()const;
+		int get_width()const;
+		int get_height()const;
 		const Parameter<int>& get_focus() const;
         const Parameter<int>& get_exposure() const;
 
         void set_format(int format_);
 		void set_fps(unsigned int fps_);
 		void set_quality(unsigned char quality_);
-		void set_resolution(const Resolution & resolution_);
+		void set_resolution(const Shape & resolution_);
 	protected:
 		void assign_from(const VideoSettings & video_settings_);
 		int _format;
 		unsigned int _fps;
 		unsigned char _quality;
-		Resolution _resolution;
+		int _width;
+		int _height;
         Parameter<int> focus;
         Parameter<int> exposure;
     };

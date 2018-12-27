@@ -58,6 +58,8 @@ namespace webcam
 		str<<"/dev/video"<<int(_camera_number-1);
 		std::string device_file = str.str();
 
+		printf("opening %s\n",device_file.c_str());
+
 		//open----------------------------
 		struct stat st;
 		// stat file
@@ -74,7 +76,7 @@ namespace webcam
 		// open device
 		_fd = ::open(device_file.c_str(), O_RDWR /* required */ | O_NONBLOCK, 0);
 
-		// check if opening was successfull
+		// check if opening was successful
 		if (FAILURE == _fd)
 		{
 			throw webcam_exception("can not open", errno, _camera_number);

@@ -19,7 +19,7 @@ extern "C" {
 bool camera_open = false;
 webcam::DeviceInfo device_info;
 webcam::VideoSettings video_settings;
-webcam::Resolution video_resolution;
+webcam::Shape video_resolution;
 std::string video_format = "";
 size_t selected_device = 99999;
 std::string error_message = "";
@@ -78,7 +78,7 @@ static struct jpeg_error_mgr *my_error_mgr(struct my_jpeg_error *err)
 }
 
 bool select_resolution( const webcam::DeviceInfo & device_info , int width , int height ,
-                        webcam::Resolution& selected , std::string &format )
+                        webcam::Shape& selected , std::string &format )
 {
     const webcam::VideoInfoEnumeration & video_info_enumeration =
                         device_info.get_video_info_enumeration();
@@ -86,21 +86,28 @@ bool select_resolution( const webcam::DeviceInfo & device_info , int width , int
 
     int best_score = -1;
 
+    cout << "Total Video Modes " <<video_count<< endl;
     for (size_t video_index = 0; video_index < video_count; video_index++) {
         const webcam::VideoInfo &video_info = video_info_enumeration.get(video_index);
         std::string format_name =  webcam::lookup_format(video_info.get_format());
-//        cout << "image[" << video_index << "] " << format_name << " ID " << video_info.get_format() << endl;
-        if( format_name != "MJPG")
-            continue;
-        const webcam::Resolution &resolution = video_info.get_resolution();
-        int dw = width-resolution.get_width();
-        int dh = height-resolution.get_height();
-        int score = dw*dw + dh*dh;
+        const webcam::Resolutions &resolutions = video_info.get_resolutions();
 
-        if( best_score == -1 || best_score > score ) {
-            best_score = score;
-            selected = resolution;
-            format = format_name;
+//        cout << "  image[" << video_index << "] " << format_name << " ID " << video_info.get_format()
+//             <<  " res " << resolution.get_width() << " x " << resolution.get_height() << endl;
+        if( format_name != "MJPG" && format_name != "JPEG")
+            continue;
+
+        int format_width,format_height;
+        if( resolutions.find_best_match(width,height,format_width,format_height) ) {
+            int dw = width-format_width;
+            int dh = height-format_height;
+            int score = dw*dw + dh*dh;
+
+            if( best_score == -1 || best_score > score ) {
+                best_score = score;
+                selected = webcam::Shape(format_width,format_height);
+                format = format_name;
+            }
         }
     }
 
@@ -139,7 +146,7 @@ JNIEXPORT jboolean JNICALL Java_libwebcam_WebcamDriver_open
           const webcam::DeviceInfoEnumeration & enumeration = webcam::enumerator::enumerate();
           const size_t count = enumeration.count();
 
-//        cout << " searching devices " << count << endl << endl;
+        cout << " Searching v4l devices. total = " << count << endl << endl;
 
           if( count > 1 ) {
             std::cout << "Multiple cameras to choose from. Selecting first matching. regex='" << str_regex << "`" << endl;
@@ -182,19 +189,19 @@ JNIEXPORT jboolean JNICALL Java_libwebcam_WebcamDriver_open
 
 //      cout << " selecting resolution" << endl << flush;
       if( !select_resolution( device_info,width,height,video_resolution,video_format) ) {
-        error_message = "failed to select resolution";
+        error_message = "failed to select resolution. No MJPG modes?";
           return JNI_FALSE;
       }
     } else {
       // see if the resolution has changed
-      webcam::Resolution selected;
+      webcam::Shape selected;
       std::string format;
       if( !select_resolution( device_info,width,height,selected,format) ) {
-         error_message = "failed to select resolution";
+         error_message = "failed to select resolution. No MJPG modes?";
           return JNI_FALSE;
       }
-      if( selected.get_width() == video_resolution.get_width() &&
-          selected.get_height() == video_resolution.get_height() )
+      if( selected.width == video_resolution.width &&
+          selected.height == video_resolution.height )
       {
           return JNI_TRUE;
       }
@@ -235,12 +242,12 @@ JNIEXPORT jboolean JNICALL Java_libwebcam_WebcamDriver_open
 JNIEXPORT jboolean JNICALL Java_libwebcam_WebcamDriver_close
   (JNIEnv *env, jobject obj) {
   if( !camera_open )
-      return true;
+      return JNI_TRUE;
 
   device->close();
   delete device;
   device = NULL;
-  return true;
+  return JNI_TRUE;
 }
 
 
@@ -281,11 +288,11 @@ JNIEXPORT jboolean JNICALL Java_libwebcam_WebcamDriver_capture
     (void) jpeg_read_header(&dinfo, TRUE);
     (void) jpeg_start_decompress(&dinfo);
 
-    if( dinfo.output_width != video_resolution.get_width() ) {
+    if( dinfo.output_width != video_resolution.width ) {
         error_message = "Unexpected width in jpeg.";
         goto fail;
     }
-    if( dinfo.output_height != video_resolution.get_height() ) {
+    if( dinfo.output_height != video_resolution.height ) {
         error_message = "Unexpected width in jpeg.";
         goto fail;
     }
@@ -310,12 +317,12 @@ JNIEXPORT jboolean JNICALL Java_libwebcam_WebcamDriver_capture
 
 JNIEXPORT jint JNICALL Java_libwebcam_WebcamDriver_imageWidth
   (JNIEnv *env, jobject obj) {
-    return video_resolution.get_width();
+    return video_resolution.width;
   }
 
 JNIEXPORT jint JNICALL Java_libwebcam_WebcamDriver_imageHeight
   (JNIEnv *env, jobject obj) {
-    return video_resolution.get_height();
+    return video_resolution.height;
   }
 
 JNIEXPORT jint JNICALL Java_libwebcam_WebcamDriver_imageBands
@@ -449,7 +456,17 @@ JNIEXPORT void JNICALL Java_libwebcam_WebcamDriver_setFocus
     device->set_focus(automatic,value);
   }
 
-JNIEXPORT jstring JNICALL Java_libwebcam_WebcamDriver_getDevice
+JNIEXPORT jstring JNICALL Java_libwebcam_WebcamDriver_getPort
+        (JNIEnv *env, jobject) {
+    return env->NewStringUTF(device_info.get_port().c_str());
+}
+
+JNIEXPORT jstring JNICALL Java_libwebcam_WebcamDriver_getSerialNumber
+        (JNIEnv *env, jobject) {
+    return env->NewStringUTF(device_info.get_serial().c_str());
+}
+
+JNIEXPORT jstring JNICALL Java_libwebcam_WebcamDriver_getDeviceType
   (JNIEnv *env, jobject) {
     return env->NewStringUTF(device_info.get_model_info().get_name().c_str());
   }

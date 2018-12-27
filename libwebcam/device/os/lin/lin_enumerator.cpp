@@ -14,7 +14,8 @@
 #include <linux/videodev2.h>
 #include <algorithm>
 #include <unistd.h>//close
-
+#include <array>
+#include <memory>
 #include <iostream>
 
 
@@ -59,6 +60,30 @@ static bool is_video_device(const char * name)
 	return pos != std::string::npos;
 }
 
+// executes a command and returns the stdout as a string
+std::string exec(const char* cmd) {
+	std::array<char, 128> buffer;
+	std::string result;
+	std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
+	if (!pipe) {
+		throw std::runtime_error("popen() failed!");
+	}
+	while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
+		result += buffer.data();
+	}
+	return result;
+}
+
+std::string lookupDeviceSerial( const std::string& device )
+{
+	std::string cmd = "/bin/udevadm info --name="+device+" 2>/dev/null | grep SERIAL_SHORT | cut -d '=' -f2";
+	std::string serial_number = exec(cmd.c_str());
+	// this realy should trim the string to remove the \n but that's not trivial in C++
+	if( serial_number.size() > 0 )
+		serial_number.substr(0,serial_number.size()-1);
+	return serial_number;
+}
+
 DeviceInfoEnumeration enumerator::enumerate()
 {
 	DeviceInfoEnumeration device_enumeration;
@@ -85,10 +110,13 @@ DeviceInfoEnumeration enumerator::enumerate()
 
 		int fd = open(device_file.c_str(), O_RDONLY);
 		if(ERROR != fd){
-
+			std::string serial_number = lookupDeviceSerial(device_file);
+            std::cout << "device = " << device_file << " serial = " << serial_number << std::endl;
 			webcam::DeviceInfo device_info;
 
 			ModelInfo model_info = get_model_info(fd);
+			device_info.get_port() = device_file;
+			device_info.get_serial() = serial_number;
 			device_info.set_model_info(model_info);
 
 			VideoInfoEnumeration video_enumeration = get_video_info_enumeration(fd);
@@ -144,19 +172,18 @@ VideoInfoEnumeration enumerator::get_video_info_enumeration(int fd_)
 	while( fmt_enum.next(fd_) )
 	{
 		int format = lookup_format_four_cc(vid_fmtdesc.pixelformat);
-		std::vector<webcam::Resolution> resolutions = get_resolutions(fd_, vid_fmtdesc.pixelformat);
-		for(const webcam::Resolution & resolution: resolutions)
-		{
-			webcam::VideoInfo video_info(resolution, format, 0);
-			enumeration.put(video_info);
-		}
+		std::cout << " found format four_cc " << lookup_format(format) << std::endl;
+		Resolutions resolutions = get_resolutions(fd_, vid_fmtdesc.pixelformat);
+		webcam::VideoInfo video_info(resolutions, format, 0);
+		enumeration.put(video_info);
 	}
 	return enumeration;
 }
 
-std::vector<webcam::Resolution> enumerator::get_resolutions(int fd_, unsigned int pixelformat_)
+Resolutions enumerator::get_resolutions(int fd_, unsigned int pixelformat_)
 {
-	std::vector<webcam::Resolution> resolutions;
+	// Technically it can support multiple types. We will ignore that and force it to one type
+	Resolutions resolutions;
 	struct v4l2_frmsizeenum frmsize;
 	struct v4l2_frmivalenum frmival;
 	memset(&frmival, 0, sizeof(frmival));
@@ -171,19 +198,32 @@ std::vector<webcam::Resolution> enumerator::get_resolutions(int fd_, unsigned in
 			unsigned int width = frmsize.discrete.width;
 			unsigned int height = frmsize.discrete.height;
 
-			property_enumerator<v4l2_frmivalenum> frmival_enum(frmival, VIDIOC_ENUM_FRAMEINTERVALS);
-			frmival.pixel_format = pixelformat_;
-			frmival.width = width;
-			frmival.height = height;
+//			property_enumerator<v4l2_frmivalenum> frmival_enum(frmival, VIDIOC_ENUM_FRAMEINTERVALS);
+//			frmival.pixel_format = pixelformat_;
+//			frmival.width = width;
+//			frmival.height = height;
+			resolutions._resolutions.push_back(Shape(width, height));
 
-			webcam::Resolution resolution(width, height);
-			resolutions.push_back(resolution);
+//			while( frmival_enum.next(fd_) ) {
+//				//frmival contains frame rating
+//			}
+		} else if( frmsize.type == V4L2_FRMSIZE_TYPE_STEPWISE ) {
+			std::cout << "  stepwise resolution. width = " <<
+					  frmsize.stepwise.min_width << " to " << frmsize.stepwise.max_width <<
+					  " step " << frmsize.stepwise.step_width << std::endl;
+			std::cout << "                       height = " <<
+					  frmsize.stepwise.min_height << " to " << frmsize.stepwise.max_height <<
+					  " step " << frmsize.stepwise.step_height << std::endl;
 
-			while( frmival_enum.next(fd_) ) {
-				//frmival contains frame rating
-			}
+			resolutions._width_min = frmsize.stepwise.min_width;
+			resolutions._width_max = frmsize.stepwise.max_width;
+			resolutions._width_step = frmsize.stepwise.step_width;
+			resolutions._height_min = frmsize.stepwise.min_height;
+			resolutions._height_max = frmsize.stepwise.max_height;
+			resolutions._height_step = frmsize.stepwise.step_height;
 		}
 	}
+
 	return resolutions;
 }
 
