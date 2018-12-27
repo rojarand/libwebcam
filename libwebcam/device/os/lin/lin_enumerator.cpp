@@ -79,8 +79,8 @@ std::string lookupDeviceSerial( const std::string& device )
 	std::string cmd = "/bin/udevadm info --name="+device+" 2>/dev/null | grep SERIAL_SHORT | cut -d '=' -f2";
 	std::string serial_number = exec(cmd.c_str());
 	// this realy should trim the string to remove the \n but that's not trivial in C++
-	if( serial_number.size() > 0 )
-		serial_number.substr(0,serial_number.size()-1);
+	if( serial_number.size() > 0 && serial_number.at(serial_number.size()-1) == '\n')
+		serial_number = serial_number.substr(0,serial_number.size()-1);
 	return serial_number;
 }
 
