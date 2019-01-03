@@ -14,28 +14,32 @@ import java.io.File;
 public class WebcamDriver {
 
     static {
-        boolean success = false;
 
-        try {
-            System.loadLibrary("webcamjni");
-            success = true;
-        } catch( UnsatisfiedLinkError ignore ){}
+        String libs[] = new String[]{"webcam","webcamjni"};
 
-        try {
-            NativeUtils.setLibraryName("webcamjni");
-            // First try loading it locally from the devepmental path
-            success = success || NativeUtils.loadLocalPath(new File("build_release/libwebcam-jni"));
-            success = success || NativeUtils.loadLocalPath(new File("../build_release/libwebcam-jni"));
-            success = success || NativeUtils.loadLocalPath(new File("build/libwebcam-jni"));
-            success = success || NativeUtils.loadLocalPath(new File("../build/libwebcam-jni"));
-            success = success || NativeUtils.loadLibraryFromJar("/");
-            success = success || NativeUtils.loadLibraryFromJar("/arm64-v8a");
-            success = success || NativeUtils.loadLibraryFromJar("/armeabi-v7a");
+        for( String lib : libs ) {
+            boolean success = false;
+            try {
+                System.loadLibrary(lib);
+                success = true;
+            } catch( UnsatisfiedLinkError ignore ){}
 
-            if (!success)
-                System.err.println("Failed to load native library");
-        } catch( Exception e ) {
-            e.printStackTrace();
+            try {
+                NativeUtils.setLibraryName(lib);
+                // First try loading it locally from the devepmental path
+                success = success || NativeUtils.loadLocalPath(new File("build_release/libwebcam-jni"));
+                success = success || NativeUtils.loadLocalPath(new File("../build_release/libwebcam-jni"));
+                success = success || NativeUtils.loadLocalPath(new File("build/libwebcam-jni"));
+                success = success || NativeUtils.loadLocalPath(new File("../build/libwebcam-jni"));
+                success = success || NativeUtils.loadLibraryFromJar("/");
+                success = success || NativeUtils.loadLibraryFromJar("/arm64-v8a");
+                success = success || NativeUtils.loadLibraryFromJar("/armeabi-v7a");
+
+                if (!success)
+                    System.err.println("Failed to load native library");
+            } catch( Exception e ) {
+                e.printStackTrace();
+            }
         }
     }
     /**
