@@ -78,8 +78,9 @@ println "  Classifier name: $project.ext.platform"
 println "  Native location: $project.ext.build_location"
 task nativeJar(type: Jar) {
     classifier "$project.ext.platform"
-    from file("$project.ext.build_location/libwebcam-jni/")
+    from files("$project.ext.build_location/libwebcam-jni/","$project.ext.build_location/libwebcam/")
     include 'libwebcamjni.*'
+    include 'libwebcam.*'
 }
 
 artifacts {
