@@ -1,4 +1,10 @@
+plugins {
+    id "com.peterabeles.nativehelper" version "1.0.0"
+}
+
 apply plugin: 'java'
+
+import com.peterabeles.NativeHelper
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -54,25 +60,8 @@ if( !file("$ext.build_location").exists() ) {
     throw new GradleException("Native build directory $ext.build_location does not exist!")
 }
 
-// Determine which architecture it is being bult on so that it knows what to name the classifier as.
-import static org.apache.tools.ant.taskdefs.condition.Os.*
-
-String osName = org.gradle.internal.os.OperatingSystem.current().getName()
-String osVersion = org.gradle.internal.os.OperatingSystem.current().getVersion()
-println "  Platform:        $osName $osVersion ${OS_ARCH}"
-
-// yes it assumes x86. Not sure
-if (org.gradle.internal.os.OperatingSystem.current().isLinux()) {
-    ext.platform = "linux-${OS_ARCH}"
-} else if (org.gradle.internal.os.OperatingSystem.current().isUnix()) {
-    ext.platform = "unix-${OS_ARCH}"
-} else if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
-    ext.platform = "windows-${OS_ARCH}"
-} else if (org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {
-    ext.platform = "macos-${OS_ARCH}"
-} else {
-    ext.platform = "unknown_${OS_ARCH}"
-}
+// Determine the native platform it's running on
+ext.platform = NativeHelper.getPlatformName()
 
 println "  Classifier name: $project.ext.platform"
 println "  Native location: $project.ext.build_location"
