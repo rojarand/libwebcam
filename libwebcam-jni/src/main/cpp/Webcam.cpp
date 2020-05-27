@@ -92,10 +92,13 @@ bool select_resolution( const webcam::DeviceInfo & device_info , int width , int
         std::string format_name =  webcam::lookup_format(video_info.get_format());
         const webcam::Resolutions &resolutions = video_info.get_resolutions();
 
-//        cout << "  image[" << video_index << "] " << format_name << " ID " << video_info.get_format()
-//             <<  " res " << resolution.get_width() << " x " << resolution.get_height() << endl;
-        if( format_name != "MJPG" && format_name != "JPEG")
+//        cout << "  image[" << video_index << "] " << format_name << " ID " << video_info.get_format() << endl;
+
+        if( format_name != "MJPG" && format_name != "JPEG") {
+            // for debugging save the name of a format which didn't work
+            format = format_name;
             continue;
+        }
 
         int format_width,format_height;
         if( resolutions.find_best_match(width,height,format_width,format_height) ) {
@@ -189,7 +192,7 @@ JNIEXPORT jboolean JNICALL Java_libwebcam_WebcamDriver_open
 
 //      cout << " selecting resolution" << endl << flush;
       if( !select_resolution( device_info,width,height,video_resolution,video_format) ) {
-        error_message = "failed to select resolution. No MJPG modes?";
+        error_message = string("Loc 1: failed to select resolution. No MJPG modes? Found: ").append(video_format);
           return JNI_FALSE;
       }
     } else {
@@ -197,7 +200,7 @@ JNIEXPORT jboolean JNICALL Java_libwebcam_WebcamDriver_open
       webcam::Shape selected;
       std::string format;
       if( !select_resolution( device_info,width,height,selected,format) ) {
-         error_message = "failed to select resolution. No MJPG modes?";
+         error_message = string("Loc 2: failed to select resolution. No MJPG modes? Found: ").append(format);
           return JNI_FALSE;
       }
       if( selected.width == video_resolution.width &&

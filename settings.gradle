@@ -1,1 +1,2 @@
 include 'libwebcam-jni'
+include 'examples'

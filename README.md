@@ -129,7 +129,7 @@ public class ExampleLibWebcam {
                 throw new RuntimeException("Capture Failed");
             }
             
-            // do somethign with the image
+            // do something with the image
         }
     }
 }

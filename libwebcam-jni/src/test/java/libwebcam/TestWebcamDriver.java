@@ -39,13 +39,13 @@ public class TestWebcamDriver {
     }
 
     @Test
-    public void openNonExistantDevice() {
+    public void openNonExistentDevice() {
         WebcamDriver driver = new WebcamDriver();
 
         System.out.println("opening");
 
         if( driver.open(640,480, "ASDASDSADSAD") ) {
-            System.err.println("Shouldn't have opened any device!"+driver.getDevice());
+            System.err.println("Shouldn't have opened any device!"+driver.getDeviceType());
             System.exit(1);
         }
         System.out.println("success");
