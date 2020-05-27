@@ -84,7 +84,9 @@ bool select_resolution( const webcam::DeviceInfo & device_info , int width , int
                         device_info.get_video_info_enumeration();
     size_t video_count = video_info_enumeration.count();
 
+    format = "";
     int best_score = -1;
+    bool is_jpeg = false;
 
     cout << "Total Video Modes " <<video_count<< endl;
     for (size_t video_index = 0; video_index < video_count; video_index++) {
@@ -94,10 +96,16 @@ bool select_resolution( const webcam::DeviceInfo & device_info , int width , int
 
 //        cout << "  image[" << video_index << "] " << format_name << " ID " << video_info.get_format() << endl;
 
-        if( format_name != "MJPG" && format_name != "JPEG") {
-            // for debugging save the name of a format which didn't work
-            format = format_name;
-            continue;
+        if( format_name != "MJPG" && format_name != "JPEG" ) {
+            // Prefer JPEG since we can convert that to RGB in the C++ code and it's a known format
+            if( is_jpeg )
+                continue;
+        } else {
+            // if this is the first jpeg reset the score
+            if( !is_jpeg ) {
+                best_score = -1;
+            }
+            is_jpeg = true;
         }
 
         int format_width,format_height;
@@ -274,48 +282,54 @@ JNIEXPORT jboolean JNICALL Java_libwebcam_WebcamDriver_capture
     unsigned char * data = image->get_data();
     unsigned int length = image->get_data_length();
 
-    struct jpeg_decompress_struct dinfo;
-    struct my_jpeg_error err;
+    // if it's a JPEG image decompress it now
+    if( video_format == "MJPG" || video_format == "JPEG" ) {
+        struct jpeg_decompress_struct dinfo;
+        struct my_jpeg_error err;
 
-    memset(&dinfo, 0, sizeof(dinfo));
-    dinfo.err = my_error_mgr(&err);
+        memset(&dinfo, 0, sizeof(dinfo));
+        dinfo.err = my_error_mgr(&err);
 
-    if (setjmp(err.env)) {
-        success = false;
-        goto fail;
+        if (setjmp(err.env)) {
+            success = false;
+            goto fail;
+        }
+
+        jpeg_create_decompress(&dinfo);
+
+        (void) jpeg_mem_src(&dinfo, data, length);
+        (void) jpeg_read_header(&dinfo, TRUE);
+        (void) jpeg_start_decompress(&dinfo);
+
+        if( dinfo.output_width != video_resolution.width ) {
+            error_message = "Unexpected width in jpeg.";
+            goto fail;
+        }
+        if( dinfo.output_height != video_resolution.height ) {
+            error_message = "Unexpected width in jpeg.";
+            goto fail;
+        }
+        if( dinfo.output_components != 3 ) {
+            error_message = "Unexpected number of components in jpeg.";
+            goto fail;
+        }
+
+        for (int y = 0; y < dinfo.output_height; y++) {
+            JSAMPROW row_pointer = (JSAMPROW)img_data + y * dinfo.output_width*dinfo.output_components;
+            jpeg_read_scanlines(&dinfo, &row_pointer, 1);
+        }
+
+        jpeg_finish_decompress(&dinfo);
+
+        fail:
+            jpeg_destroy_decompress(&dinfo);
+    } else {
+        // otherwise just copy it over
+        memmove(img_data,data,length);
     }
-
-    jpeg_create_decompress(&dinfo);
-
-    (void) jpeg_mem_src(&dinfo, data, length);
-    (void) jpeg_read_header(&dinfo, TRUE);
-    (void) jpeg_start_decompress(&dinfo);
-
-    if( dinfo.output_width != video_resolution.width ) {
-        error_message = "Unexpected width in jpeg.";
-        goto fail;
-    }
-    if( dinfo.output_height != video_resolution.height ) {
-        error_message = "Unexpected width in jpeg.";
-        goto fail;
-    }
-    if( dinfo.output_components != 3 ) {
-        error_message = "Unexpected number of components in jpeg.";
-        goto fail;
-    }
-
-    for (int y = 0; y < dinfo.output_height; y++) {
-        JSAMPROW row_pointer = (JSAMPROW)img_data + y * dinfo.output_width*dinfo.output_components;
-        jpeg_read_scanlines(&dinfo, &row_pointer, 1);
-    }
-
-    jpeg_finish_decompress(&dinfo);
-
-    fail:
-        env->ReleasePrimitiveArrayCritical((jarray)jdata, img_data, JNI_ABORT);
-        delete image;
-        jpeg_destroy_decompress(&dinfo);
-        return success;
+    env->ReleasePrimitiveArrayCritical((jarray)jdata, img_data, JNI_ABORT);
+    delete image;
+    return success;
   }
 
 JNIEXPORT jint JNICALL Java_libwebcam_WebcamDriver_imageWidth
@@ -458,6 +472,11 @@ JNIEXPORT void JNICALL Java_libwebcam_WebcamDriver_setFocus
     }
     device->set_focus(automatic,value);
   }
+
+JNIEXPORT jstring JNICALL Java_libwebcam_WebcamDriver_getWebcamFormat
+        (JNIEnv *env, jobject) {
+    return env->NewStringUTF(video_format.c_str());
+}
 
 JNIEXPORT jstring JNICALL Java_libwebcam_WebcamDriver_getPort
         (JNIEnv *env, jobject) {

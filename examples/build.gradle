@@ -22,6 +22,7 @@ repositories {
 }
 
 dependencies {
+//    compile project(':libwebcam-jni')
     compile('libwebcam:libwebcam-jni:1.0-SNAPSHOT')
     compile("libwebcam:libwebcam-jni:1.0-SNAPSHOT:$project.ext.platform")
 }
