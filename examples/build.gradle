@@ -22,6 +22,10 @@ repositories {
 }
 
 dependencies {
+    ['core','swing'].each { String a->
+        compile('org.boofcv:boofcv-'+a+':0.36')
+    }
+
 //    compile project(':libwebcam-jni')
     compile('libwebcam:libwebcam-jni:1.0-SNAPSHOT')
     compile("libwebcam:libwebcam-jni:1.0-SNAPSHOT:$project.ext.platform")

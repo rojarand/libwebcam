@@ -1,7 +1,5 @@
 package libwebcam;
 
-import boofcv.struct.image.InterleavedU8;
-import org.ddogleg.struct.GrowQueue_I8;
 import utils.NativeUtils;
 
 import java.io.File;
@@ -14,7 +12,7 @@ import java.io.File;
 public class WebcamDriver {
 
     // The raw image data in whatever format it likes
-    GrowQueue_I8 rawData = new GrowQueue_I8();
+    WebcamArray rawData = new WebcamArray();
     boolean convertedToRgb;
 
     static {
@@ -67,7 +65,7 @@ public class WebcamDriver {
 
     public native boolean isOpen();
 
-    public boolean capture( InterleavedU8 image ) {
+    public boolean capture( WebcamImage image ) {
         convertedToRgb = false;
         String format = getWebcamFormat();
         image.reshape(imageWidth(),imageHeight(),imageBands());
@@ -126,7 +124,7 @@ public class WebcamDriver {
         MIN,MAX,DEFAULT,STEP,CURRENT,MANUAL,AUTOMATIC
     }
 
-    public static void yuyvToRgb(byte[] dataYV, InterleavedU8 output) {
+    public static void yuyvToRgb(byte[] dataYV, WebcamImage output) {
 
         final int yStride = output.width*2;
 
@@ -134,7 +132,7 @@ public class WebcamDriver {
         for( int row = 0; row < output.height; row++ ) {
             int indexY = row*yStride;
             int indexU = indexY+1;
-            int indexOut = output.startIndex + row*output.stride;
+            int indexOut = row*output.stride;
 
             for( int col = 0; col < output.width; col++, indexY += 2 ) {
 //                System.out.println("row "+row+" col "+col+" indexY "+indexY+" indexU "+indexU);

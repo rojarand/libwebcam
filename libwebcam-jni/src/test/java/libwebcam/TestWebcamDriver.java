@@ -6,11 +6,9 @@ import boofcv.io.image.ConvertBufferedImage;
 import boofcv.misc.BoofMiscOps;
 import boofcv.struct.image.InterleavedU8;
 import libwebcam.WebcamDriver.ValueType;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.awt.image.BufferedImage;
-import java.awt.image.ImageProducer;
-import java.util.List;
 
 /**
  * @author Peter Abeles
@@ -83,9 +81,9 @@ public class TestWebcamDriver {
 
         System.out.println("Actual Resolution: "+driver.imageWidth()+"x"+driver.imageHeight());
 
-        BufferedImage buffered = new BufferedImage(640,480,BufferedImage.TYPE_INT_BGR);
+        var buffered = new BufferedImage(640,480,BufferedImage.TYPE_INT_BGR);
         ImagePanel gui = ShowImages.showWindow(buffered,"foo",true);
-        InterleavedU8 image = new InterleavedU8(1,1,1);
+        var image = new WebcamImage();
         readImages(driver, buffered, gui, image, 1000);
 
         System.out.println("Closing");
@@ -139,9 +137,9 @@ public class TestWebcamDriver {
         driver.setFocus(true,driver.readFocus(ValueType.DEFAULT));
         driver.setGain(false,driver.readGain(ValueType.DEFAULT));
 
-        BufferedImage buffered = new BufferedImage(640,480,BufferedImage.TYPE_INT_BGR);
+        var buffered = new BufferedImage(640,480,BufferedImage.TYPE_INT_BGR);
         ImagePanel gui = ShowImages.showWindow(buffered,"foo",true);
-        InterleavedU8 image = new InterleavedU8(1,1,1);
+        var image = new WebcamImage();
 
         readImages(driver, buffered, gui, image, 60);
 
@@ -177,9 +175,9 @@ public class TestWebcamDriver {
         driver.setFocus(true,driver.readFocus(ValueType.DEFAULT));
         driver.setGain(true,driver.readGain(ValueType.DEFAULT));
 
-        BufferedImage buffered = new BufferedImage(640,480,BufferedImage.TYPE_INT_BGR);
+        var buffered = new BufferedImage(640,480,BufferedImage.TYPE_INT_BGR);
         ImagePanel gui = ShowImages.showWindow(buffered,"foo",true);
-        InterleavedU8 image = new InterleavedU8(1,1,1);
+        var image = new WebcamImage();
 
         readImages(driver, buffered, gui, image, 60);
 
@@ -215,9 +213,9 @@ public class TestWebcamDriver {
         driver.setFocus(true,driver.readFocus(ValueType.DEFAULT));
         driver.setGain(true,driver.readGain(ValueType.DEFAULT));
 
-        BufferedImage buffered = new BufferedImage(640,480,BufferedImage.TYPE_INT_BGR);
+        var buffered = new BufferedImage(640,480,BufferedImage.TYPE_INT_BGR);
         ImagePanel gui = ShowImages.showWindow(buffered,"foo",true);
-        InterleavedU8 image = new InterleavedU8(1,1,1);
+        var image = new WebcamImage();
 
         readImages(driver, buffered, gui, image, 60);
 
@@ -240,10 +238,16 @@ public class TestWebcamDriver {
         BoofMiscOps.sleep(1000);
     }
 
-    private void readImages(WebcamDriver driver, BufferedImage buffered, ImagePanel gui, InterleavedU8 image, int i2) {
+    private void readImages(WebcamDriver driver, BufferedImage buffered, ImagePanel gui, WebcamImage image, int i2) {
+        var boof = new InterleavedU8();
         for (int i = 0; i < i2; i++) {
             driver.capture(image);
-            ConvertBufferedImage.convertTo(image, buffered, true);
+            boof.data = image.data;
+            boof.width = image.width;
+            boof.height = image.height;
+            boof.stride = image.stride;
+            boof.setNumberOfBands(image.bands);
+            ConvertBufferedImage.convertTo(boof, buffered, true);
             gui.setImageRepaint(buffered);
         }
     }

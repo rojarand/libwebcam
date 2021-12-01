@@ -47,10 +47,12 @@ javadoc {
 }
 
 dependencies {
+
     ['core','swing'].each { String a->
-        compile('org.boofcv:boofcv-'+a+':0.36')
+        testCompile('org.boofcv:boofcv-'+a+':0.36')
     }
 
+    testImplementation("org.junit.jupiter:junit-jupiter-api:$junit_version")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junit_version")
 }
 
