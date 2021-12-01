@@ -8,4 +8,4 @@ cmake -DCMAKE_BUILD_TYPE=Release ..
 make -j8
 
 cd ..
-./gradlew -Pnative_build_location=../build_release install
+./gradlew -Pnative_build_location=../build_release pTML

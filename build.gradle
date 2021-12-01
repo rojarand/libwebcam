@@ -6,19 +6,13 @@ allprojects {
     version = '1.0-SNAPSHOT'
 }
 
-subprojects {
-    apply plugin: 'maven'
+project.ext.junit_version = '5.8.1'
 
-    uploadArchives {
-        repositories {
-            mavenDeployer {
-                repository(url: mavenLocal().getUrl())
-            }
-        }
-    }
+subprojects {
+    apply plugin: 'maven-publish'
 }
 
 wrapper {
     distributionType = Wrapper.DistributionType.BIN
-    gradleVersion = '6.4.1'
+    gradleVersion = '6.8.3'
 }

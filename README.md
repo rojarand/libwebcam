@@ -3,7 +3,7 @@
 sudo apt install libjpeg-dev
 export JAVA_HOME=/path/to/jdk
 cd libwebcan-jni
-../gradlew install
+../gradlew pTML
 cd ..
 ./build_release.sh
 
