@@ -3,7 +3,7 @@ allprojects {
     apply plugin: 'eclipse'
 
     group = 'libwebcam'
-    version = '1.0-SNAPSHOT'
+    version = '1.0.1'
 }
 
 project.ext.junit_version = '5.8.1'
