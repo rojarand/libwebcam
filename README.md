@@ -1,3 +1,12 @@
+# Quick Build Instructions
+
+sudo apt install libjpeg-dev
+export JAVA_HOME=/path/to/jdk
+cd libwebcan-jni
+../gradlew install
+cd ..
+./build_release.sh
+
 # libwebcam
 ## Lightweigh C++ webcam library
 

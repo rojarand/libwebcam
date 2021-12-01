@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.2.2)
 
-project(libwebcam)
+project(libwebcam VERSION ${CMAKE_PROJECT_VERSION})
 
 set(CMAKE_CXX_STANDARD 11)
 
@@ -39,6 +39,9 @@ add_library(${LIB_NAME} ${LIB_MODE}
 	${UTILS_SOURCES}
 	${INCLUDER})
 	
+set_target_properties(${LIB_NAME} PROPERTIES
+                      VERSION ${PROJECT_VERSION}
+                      SOVERSION ${PROJECT_VERSION_MAJOR})
 
 install(TARGETS ${LIB_NAME} DESTINATION lib ARCHIVE DESTINATION lib)
 

@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.2.2)
 
+project(webcamjni VERSION ${CMAKE_PROJECT_VERSION})
+
 set(CMAKE_CXX_STANDARD 11)
 
 find_package(JNI)
@@ -24,5 +26,9 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
 file(GLOB JNI_SRC "src/main/cpp/*.cpp")
 
 add_library(webcamjni SHARED ${JNI_SRC})
+
+set_target_properties(webcamjni PROPERTIES
+                      VERSION ${PROJECT_VERSION}
+                      SOVERSION ${PROJECT_VERSION_MAJOR})
 
 target_link_libraries(webcamjni webcam jpeg)
