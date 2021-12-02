@@ -15,7 +15,10 @@ subprojects {
     java {
         withJavadocJar()
         withSourcesJar()
-        toolchain { languageVersion = JavaLanguageVersion.of(11) }
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(11)
+            vendor = JvmVendorSpec.AZUL
+        }
     }
 
 // Prevents tons of errors if someone is using ASCII
