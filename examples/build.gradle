@@ -2,31 +2,15 @@ plugins {
     id "com.peterabeles.nativehelper" version "1.0.0"
 }
 
-apply plugin: 'java'
-
 import com.peterabeles.NativeHelper
 
 // Determine the native platform it's running on
 ext.platform = NativeHelper.getPlatformName()
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
-}
-
-repositories {
-    mavenCentral()
-    mavenLocal()
-
-    maven { url = "https://oss.sonatype.org/content/repositories/snapshots/" }
-}
-
 dependencies {
     ['core','swing'].each { String a->
-        compile('org.boofcv:boofcv-'+a+':0.36')
+        implementation('org.boofcv:boofcv-'+a+':0.36')
     }
 
-//    compile project(':libwebcam-jni')
-    compile('libwebcam:libwebcam-jni:1.0-SNAPSHOT')
-    compile("libwebcam:libwebcam-jni:1.0-SNAPSHOT:$project.ext.platform")
+    api project(":libwebcam-jni")
 }

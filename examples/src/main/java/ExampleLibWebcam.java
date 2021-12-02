@@ -3,6 +3,7 @@ import boofcv.gui.image.ShowImages;
 import boofcv.io.image.ConvertBufferedImage;
 import boofcv.struct.image.InterleavedU8;
 import libwebcam.WebcamDriver;
+import libwebcam.WebcamImage;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -31,12 +32,12 @@ public class ExampleLibWebcam {
 //        gui.setPreferredSize(new Dimension(webcam.imageWidth(),webcam.imageHeight()));
 //        ShowImages.showWindow(gui,"Webcam",true);
 
-        InterleavedU8 color = new InterleavedU8(1, 1, 3);
+        WebcamImage image = new WebcamImage();
 
         long time0 = System.nanoTime();
         for(int i = 0; i < 100; i++) {
-            System.out.println("Got Frame "+i+" at "+color.width+"x"+color.height);
-            if (!webcam.capture(color)) {
+            System.out.println("Got Frame "+i+" at "+image.width+"x"+image.height);
+            if (!webcam.capture(image)) {
                 throw new RuntimeException("Capture Failed");
             }
             // do something with the image
