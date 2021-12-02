@@ -16,10 +16,7 @@ subprojects {
     java {
         withJavadocJar()
         withSourcesJar()
-        toolchain {
-            languageVersion = JavaLanguageVersion.of(11)
-            vendor = JvmVendorSpec.ADOPTOPENJDK
-        }
+        toolchain { languageVersion = JavaLanguageVersion.of(11) }
     }
 
     // Prevents tons of errors if someone is using ASCII
