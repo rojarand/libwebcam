@@ -1,3 +1,9 @@
+plugins {
+    id "com.peterabeles.nativehelper" version "1.0.0"
+}
+
+import com.peterabeles.NativeHelper
+
 dependencies {
     ['core','swing'].each { String a->
         implementation('org.boofcv:boofcv-'+a+':0.36')
